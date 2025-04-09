@@ -64,6 +64,12 @@ export default function NetworkTrafficFixed({ deviceId }: NetworkTrafficFixedPro
         );
     };
     
+    // Kiểm tra xem metrics có phải là null không trước khi filter
+    if (!metrics || !Array.isArray(metrics)) {
+      console.log("Metrics là null hoặc không phải mảng");
+      return [];
+    }
+    
     // Lọc và giữ lại các metric hợp lệ
     let validMetrics = metrics.filter(isValidMetric);
     
@@ -997,7 +1003,7 @@ export default function NetworkTrafficFixed({ deviceId }: NetworkTrafficFixedPro
                 Tải xuống hiện tại:
               </span>
               <span className="text-green-400 text-xl font-mono">
-                {formatMbps(getCurrentTrafficStats().download)}
+                {formatBandwidth(getCurrentTrafficStats().download * 125000, 2)}
               </span>
             </div>
             <div className="col-span-4 bg-slate-800 rounded-lg p-2.5 flex flex-col">
@@ -1006,7 +1012,7 @@ export default function NetworkTrafficFixed({ deviceId }: NetworkTrafficFixedPro
                 Tải lên hiện tại:
               </span>
               <span className="text-purple-400 text-xl font-mono">
-                {formatMbps(getCurrentTrafficStats().upload)}
+                {formatBandwidth(getCurrentTrafficStats().upload * 125000, 2)}
               </span>
             </div>
             <div className="col-span-4 bg-slate-800 rounded-lg p-2.5 flex flex-col">
@@ -1015,7 +1021,7 @@ export default function NetworkTrafficFixed({ deviceId }: NetworkTrafficFixedPro
                 Tổng lưu lượng:
               </span>
               <span className="text-blue-400 text-xl font-mono">
-                {formatMbps(getCurrentTrafficStats().traffic)}
+                {formatBandwidth(getCurrentTrafficStats().traffic * 125000, 2)}
               </span>
             </div>
             

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { formatBandwidth } from "@/hooks/use-data-formatter";
 import { useQuery } from "@tanstack/react-query";
 import { Metric, Interface } from "@shared/schema";
 import axios from "axios";
@@ -830,24 +831,28 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
                             tick={{ fontSize: 10, fill: '#aaa' }}
                           />
                           <YAxis 
-                            tickFormatter={(value) => 
-                              value > 1024*1024*1024 
-                                ? `${(value/(1024*1024*1024)).toFixed(1)}GB` 
-                                : value > 1024*1024 
-                                  ? `${(value/(1024*1024)).toFixed(1)}MB` 
-                                  : `${(value/1024).toFixed(1)}KB`
-                            }
+                            tickFormatter={(value) => {
+                              const numValue = Number(value);
+                              return numValue > 1024*1024*1024 
+                                ? `${(numValue/(1024*1024*1024)).toFixed(1)}GB` 
+                                : numValue > 1024*1024 
+                                  ? `${(numValue/(1024*1024)).toFixed(1)}MB` 
+                                  : `${(numValue/1024).toFixed(1)}KB`;
+                            }}
                             tick={{ fontSize: 10, fill: '#aaa' }}
                           />
                           <Tooltip 
-                            formatter={(value, name) => [
-                              value > 1024*1024*1024 
-                                ? `${(value/(1024*1024*1024)).toFixed(2)} GB` 
-                                : value > 1024*1024 
-                                  ? `${(value/(1024*1024)).toFixed(2)} MB` 
-                                  : `${(value/1024).toFixed(2)} KB`,
-                              'Lưu lượng'
-                            ]}
+                            formatter={(value, name) => {
+                              const numValue = Number(value);
+                              return [
+                                numValue > 1024*1024*1024 
+                                  ? `${(numValue/(1024*1024*1024)).toFixed(2)} GB` 
+                                  : numValue > 1024*1024 
+                                    ? `${(numValue/(1024*1024)).toFixed(2)} MB` 
+                                    : `${(numValue/1024).toFixed(2)} KB`,
+                                'Lưu lượng'
+                              ];
+                            }}
                             labelFormatter={(label) => `IP: ${label}`}
                             contentStyle={{ backgroundColor: '#333', border: 'none' }}
                           />
@@ -857,12 +862,14 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
                             name="Lưu lượng"
                             label={{ 
                               position: 'top', 
-                              formatter: (value) => 
-                                value > 1024*1024*1024 
-                                  ? `${(value/(1024*1024*1024)).toFixed(1)}GB` 
-                                  : value > 1024*1024 
-                                    ? `${(value/(1024*1024)).toFixed(1)}MB` 
-                                    : `${(value/1024).toFixed(1)}KB`,
+                              formatter: (value: any) => {
+                                const numValue = Number(value);
+                                return numValue > 1024*1024*1024 
+                                  ? `${(numValue/(1024*1024*1024)).toFixed(1)}GB` 
+                                  : numValue > 1024*1024 
+                                    ? `${(numValue/(1024*1024)).toFixed(1)}MB` 
+                                    : `${(numValue/1024).toFixed(1)}KB`;
+                              },
                               fontSize: 10,
                               fill: '#aaa'
                             }} 
@@ -1099,7 +1106,7 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
                 Tải xuống hiện tại:
               </span>
               <span className="text-green-400 text-xl font-mono">
-                {formatMbps(getCurrentTrafficStats().download)}
+                {formatBandwidth(getCurrentTrafficStats().download * 125000, 2)}
               </span>
             </div>
             <div className="col-span-4 bg-slate-800 rounded-lg p-2.5 flex flex-col">
@@ -1108,7 +1115,7 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
                 Tải lên hiện tại:
               </span>
               <span className="text-purple-400 text-xl font-mono">
-                {formatMbps(getCurrentTrafficStats().upload)}
+                {formatBandwidth(getCurrentTrafficStats().upload * 125000, 2)}
               </span>
             </div>
             <div className="col-span-4 bg-slate-800 rounded-lg p-2.5 flex flex-col">
@@ -1117,7 +1124,7 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
                 Tổng lưu lượng:
               </span>
               <span className="text-blue-400 text-xl font-mono">
-                {formatMbps(getCurrentTrafficStats().traffic)}
+                {formatBandwidth(getCurrentTrafficStats().traffic * 125000, 2)}
               </span>
             </div>
             
@@ -1247,19 +1254,19 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
                   <div className="bg-slate-900 rounded-md p-3">
                     <div className="text-xs text-gray-400 mb-1">Download</div>
                     <div className="text-green-400 font-mono font-medium text-lg">
-                      {formatMbps(currentStats.download)}
+                      {formatBandwidth(currentStats.download * 125000, 2)}
                     </div>
                   </div>
                   <div className="bg-slate-900 rounded-md p-3">
                     <div className="text-xs text-gray-400 mb-1">Upload</div>
                     <div className="text-orange-400 font-mono font-medium text-lg">
-                      {formatMbps(currentStats.upload)}
+                      {formatBandwidth(currentStats.upload * 125000, 2)}
                     </div>
                   </div>
                   <div className="bg-slate-900 rounded-md p-3">
                     <div className="text-xs text-gray-400 mb-1">Total</div>
                     <div className="text-blue-400 font-mono font-medium text-lg">
-                      {formatMbps(currentStats.traffic)}
+                      {formatBandwidth((currentStats.upload + currentStats.download) * 125000, 2)}
                     </div>
                   </div>
                 </div>
