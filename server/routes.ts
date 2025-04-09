@@ -2627,5 +2627,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return result;
   };
   
+  // Endpoint xóa cache cho các service cụ thể
+  router.post("/devices/:id/clear-cache/:service", async (req: Request, res: Response) => {
+    try {
+      const deviceId = parseInt(req.params.id);
+      const serviceName = req.params.service;
+      
+      // Lấy thông tin thiết bị
+      const device = await storage.getDevice(deviceId);
+      if (!device) {
+        return res.status(404).json({ 
+          success: false,
+          message: "Thiết bị không tồn tại" 
+        });
+      }
+      
+      // Xóa cache theo loại dịch vụ
+      if (serviceName === "connection-stats") {
+        // Import service theo yêu cầu để tránh circular dependency
+        const { connectionStatsService } = await import('./services/connection-stats');
+        connectionStatsService.clearCache(deviceId);
+        console.log(`Đã xóa cache connection-stats cho thiết bị ${deviceId}`);
+      } else if (serviceName === "dhcp-stats") {
+        // Import service theo yêu cầu để tránh circular dependency
+        const { dhcpStatsService } = await import('./services/dhcp-stats');
+        dhcpStatsService.clearCache(deviceId);
+        console.log(`Đã xóa cache dhcp-stats cho thiết bị ${deviceId}`);
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: `Không hỗ trợ xóa cache cho dịch vụ ${serviceName}`
+        });
+      }
+      
+      res.json({
+        success: true,
+        message: `Đã xóa cache ${serviceName} cho thiết bị`
+      });
+    } catch (error: any) {
+      console.error(`Lỗi khi xóa cache ${req.params.service}:`, error);
+      res.status(500).json({ 
+        success: false,
+        message: error.message || `Lỗi khi xóa cache ${req.params.service}` 
+      });
+    }
+  });
+
   return httpServer;
 }

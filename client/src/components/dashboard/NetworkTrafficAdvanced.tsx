@@ -82,7 +82,7 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
   
   // Sử dụng hooks để lấy dữ liệu DHCP và Connection
   const { dhcpStats } = useDHCPStats(deviceId, autoRefresh);
-  const { connectionStats } = useConnectionStats(deviceId, autoRefresh);
+  const { connectionStats, refetch: refetchConnectionStats } = useConnectionStats(deviceId, autoRefresh);
   
   // Fetch metrics data với kiểm tra quá trình gọi
   const metricsEndpoint = deviceId ? `/api/devices/${deviceId}/metrics` : 'empty';
@@ -157,8 +157,24 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
   // Refresh data manually
   const handleRefresh = () => {
     refetchMetrics();
-    if (activeTab === "analysis") {
+    
+    // Làm mới dữ liệu phân tích
+    if (activeTab === "analysis" || activeTab === "ports") {
       analyzeTrafficLogs();
+    }
+    
+    // Tải lại thông tin connection stats nếu đang ở tab ports
+    if (activeTab === "ports" && refetchConnectionStats) {
+      // Xóa cache API endpoint trước khi gọi lại
+      axios.post(`/api/devices/${deviceId}/clear-cache/connection-stats`)
+        .then(() => {
+          refetchConnectionStats();
+        })
+        .catch(error => {
+          console.error("Không thể xóa cache connection stats:", error);
+          // Vẫn gọi refetch trong trường hợp lỗi
+          refetchConnectionStats();
+        });
     }
   };
   

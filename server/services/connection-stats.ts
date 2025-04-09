@@ -98,6 +98,12 @@ class ConnectionStatsService {
         return null;
       }
 
+      // In log để debug
+      logger.info(`Received ${connections.length} connections from device ${deviceId}`);
+      if (connections.length > 0) {
+        logger.info(`Sample connection: ${JSON.stringify(connections[0])}`);
+      }
+
       // Tính tổng số kết nối
       const totalConnections = connections.length;
       
@@ -131,12 +137,16 @@ class ConnectionStatsService {
         }
 
         // Xác định port và protocol
+        // Tập trung vào port đích (dst-port) vì đó là các cổng dịch vụ
         const dstPort = conn['dst-port'] ? parseInt(conn['dst-port']) : null;
-        const protocol = conn.protocol || 'unknown';
-        
-        if (dstPort && protocol) {
-          const key = `${dstPort}-${protocol}`;
+        if (dstPort && conn.protocol) {
+          const key = `${dstPort}-${conn.protocol}`;
           portsMap.set(key, (portsMap.get(key) || 0) + 1);
+          
+          // Log chi tiết về kết nối có port để debug
+          if (portsMap.size < 5) { // Chỉ log một số ít kết nối để tránh tràn log
+            logger.debug(`Found port connection: ${dstPort} (${conn.protocol}), src: ${conn['src-address']}, dst: ${conn['dst-address']}`);
+          }
         }
 
         // Phân loại nội bộ và bên ngoài
