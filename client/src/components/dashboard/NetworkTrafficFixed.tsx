@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useTrafficMetrics } from '@/hooks/use-traffic-metrics';
 import { useNetworkStats } from '@/hooks/use-network-stats';
-import { formatBytes, formatBitrate, formatBandwidth } from '@/hooks/use-data-formatter';
+import { formatBytes, formatBitrate, formatBandwidth, formatAccumulatedBytes } from '@/hooks/use-data-formatter';
 import { FormattedYAxis } from './FixedYAxisFormatter';
 import { FormattedTooltip } from './FormattedTooltip';
 import { Button } from '@/components/ui/button';
@@ -283,14 +283,11 @@ export default function NetworkTrafficFixed({ deviceId }: NetworkTrafficFixedPro
   const trafficTotals = calculateTotalTraffic();
   const currentStats = getCurrentTrafficStats();
   
-  // Định dạng tổng lưu lượng để hiển thị
+  // Định dạng tổng lưu lượng để hiển thị - sử dụng formatAccumulatedBytes
   const formatGB = (gigabytes: number) => {
-    if (gigabytes < 1) {
-      // Convert to MB if less than 1 GB
-      return `${(gigabytes * 1024).toFixed(2)} MB`;
-    } else {
-      return `${gigabytes.toFixed(2)} GB`;
-    }
+    // Chuyển đổi từ GB sang bytes (để dùng hàm formatAccumulatedBytes)
+    const bytesValue = gigabytes * 1024 * 1024 * 1024; // GB -> Bytes
+    return formatAccumulatedBytes(bytesValue, 2);
   };
   
   // Chuyển đổi CPU usage thành phần trăm
