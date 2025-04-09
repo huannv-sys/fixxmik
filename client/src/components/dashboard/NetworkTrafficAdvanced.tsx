@@ -518,12 +518,27 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
   const currentStats = getCurrentTrafficStats();
   const totalBandwidth = calculateTotalBandwidthUsed();
   
-  // Effect to load log analysis data when tab changes to "analysis"
+  // Effect to load log analysis data when tab changes to "analysis" or "ports"
   useEffect(() => {
     if ((activeTab === "analysis" || activeTab === "ports") && deviceId) {
+      // Luôn phân tích log lưu lượng khi chuyển tab
       analyzeTrafficLogs();
+      
+      // Nếu chuyển sang tab ports, luôn làm mới dữ liệu connection stats bằng cách xóa cache
+      if (activeTab === "ports" && refetchConnectionStats) {
+        axios.post(`/api/devices/${deviceId}/clear-cache/connection-stats`)
+          .then(() => {
+            refetchConnectionStats();
+            console.log("Đã xóa cache và tải lại connection stats cho tab Ports");
+          })
+          .catch(error => {
+            console.error("Lỗi khi xóa cache connection stats:", error);
+            // Vẫn cố gắng tải lại dữ liệu ngay cả khi xóa cache thất bại
+            refetchConnectionStats();
+          });
+      }
     }
-  }, [activeTab, deviceId, selectedTimeFrame]);
+  }, [activeTab, deviceId, selectedTimeFrame, refetchConnectionStats]);
   
   // Thiết lập cập nhật tự động cho tab phân tích lưu lượng và cổng kết nối
   useEffect(() => {

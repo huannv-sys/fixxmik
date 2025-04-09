@@ -17,9 +17,8 @@ class Logger {
   }
 
   public debug(message: string, ...args: any[]) {
-    if (process.env.DEBUG === 'true') {
-      console.debug(`[DEBUG] ${message}`, ...args);
-    }
+    // Always enable debug for connection stats debugging
+    console.debug(`[DEBUG] ${message}`, ...args);
   }
 }
 
