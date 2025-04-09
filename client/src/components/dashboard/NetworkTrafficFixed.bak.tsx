@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import { useTrafficMetrics } from '@/hooks/use-traffic-metrics';
 import { useNetworkStats } from '@/hooks/use-network-stats';
-import { formatBytes, formatBitrate, formatBandwidth } from '@/hooks/use-data-formatter';
 import { Button } from '@/components/ui/button';
 
 interface NetworkTrafficFixedProps {
@@ -114,14 +113,11 @@ export default function NetworkTrafficFixed({ deviceId }: NetworkTrafficFixedPro
   };
   
   // Format traffic values for display
-  const formatMbps = (bytesPerSecond: number) => {
-    // Chuyển bytes/s sang Mbps (1 Mbps = 125000 bytes/s)
-    const mbps = bytesPerSecond / 125000;
-    
-    if (mbps >= 1000) {
-      return `${(mbps / 1000).toFixed(2)} Gbps`;
+  const formatMbps = (value: number) => {
+    if (value >= 1000) {
+      return `${(value / 1000).toFixed(2)} Gbps`;
     } else {
-      return `${mbps.toFixed(2)} Mbps`;
+      return `${value.toFixed(2)} Mbps`;
     }
   };
   
