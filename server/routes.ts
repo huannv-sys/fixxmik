@@ -154,29 +154,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
       
       // Lấy metrics từ cơ sở dữ liệu
-      let metrics = await storage.getMetrics(deviceId, limit);
+      const metrics = await storage.getMetrics(deviceId, limit);
       
-      // Xử lý dữ liệu bandwidth để hiển thị đúng (chuyển từ bytes sang Mbps)
-      if (metrics && metrics.length > 0) {
-        metrics = metrics.map(metric => {
-          // Làm tròn giá trị để tránh truyền quá nhiều chữ số không cần thiết
-          const downloadBandwidth = typeof metric.downloadBandwidth === 'number' 
-            ? Math.round(metric.downloadBandwidth / 1000000) // Chuyển thành MB
-            : metric.downloadBandwidth;
-            
-          const uploadBandwidth = typeof metric.uploadBandwidth === 'number' 
-            ? Math.round(metric.uploadBandwidth / 1000000) // Chuyển thành MB
-            : metric.uploadBandwidth;
-          
-          return {
-            ...metric,
-            downloadBandwidth,
-            uploadBandwidth
-          };
-        });
-      }
-      
-      // Trả về metrics đã xử lý
+      // Trả về metrics thực tế từ cơ sở dữ liệu
       res.json(metrics || []);
     } catch (error) {
       console.error("Lỗi khi lấy metrics:", error);
