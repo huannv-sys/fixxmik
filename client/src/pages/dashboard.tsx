@@ -6,7 +6,7 @@ import { ChevronDown, Search } from "lucide-react";
 import SummaryCards from "@/components/dashboard/SummaryCards";
 import CPUMemoryChart from "@/components/dashboard/CPUMemoryChart";
 import NetworkTrafficChart from "@/components/dashboard/NetworkTrafficChart";
-import NetworkTrafficAdvanced from "@/components/dashboard/NetworkTrafficAdvanced";
+import NetworkTrafficFixed from "@/components/dashboard/NetworkTrafficFixed";
 import InterfaceStatus from "@/components/dashboard/InterfaceStatus";
 import InterfaceTable from "@/components/dashboard/InterfaceTable";
 import DeviceInfo from "@/components/dashboard/DeviceInfo";
@@ -210,8 +210,8 @@ const Dashboard = () => {
           {/* System Metrics (Gauges and Line Chart) */}
           <SystemMetrics deviceId={selectedDeviceId} />
           
-          {/* Network Traffic Advanced Chart */}
-          <NetworkTrafficAdvanced deviceId={selectedDeviceId} />
+          {/* Network Traffic Fixed Chart */}
+          <NetworkTrafficFixed deviceId={selectedDeviceId} />
           
           {/* Interfaces Table */}
           <InterfaceTable deviceId={selectedDeviceId} />

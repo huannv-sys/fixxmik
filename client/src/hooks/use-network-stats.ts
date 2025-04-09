@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { Interface } from "@shared/schema";
 
 /**
  * Interface cho DHCP Stats
@@ -153,4 +154,86 @@ export function useConnectionStats(deviceId: number | null, autoRefresh = false,
   }, [autoRefresh, deviceId, fetchConnectionStats, refreshInterval]);
 
   return { connectionStats, loading, error, refetch: fetchConnectionStats };
+}
+
+/**
+ * Interface cho Network Stats (kết hợp nhiều loại thống kê)
+ */
+export interface NetworkStats {
+  interfaces: Interface[] | null;
+  dhcpStats: DHCPStats | null;
+  connectionStats: ConnectionStats | null;
+  isLoading: boolean;
+  error: string | null;
+  refreshStats: () => Promise<void>;
+}
+
+/**
+ * Hook để lấy thông tin Network Stats tổng hợp từ API
+ */
+export function useNetworkStats(deviceId: number | null, autoRefresh = false, refreshInterval = 30000): NetworkStats {
+  const [interfaces, setInterfaces] = useState<Interface[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  // Sử dụng các hook cơ bản
+  const { dhcpStats, loading: dhcpLoading, error: dhcpError, refetch: refreshDhcp } = useDHCPStats(deviceId, autoRefresh);
+  const { connectionStats, loading: connLoading, error: connError, refetch: refreshConn } = useConnectionStats(deviceId, autoRefresh);
+  
+  // Fetch interfaces
+  const fetchInterfaces = useCallback(async () => {
+    if (!deviceId) {
+      setInterfaces(null);
+      setIsLoading(false);
+      return;
+    }
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const response = await axios.get(`/api/devices/${deviceId}/interfaces`);
+      if (response.data.success) {
+        setInterfaces(response.data.data);
+      } else {
+        setError(response.data.message || 'Không thể lấy thông tin interfaces');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || 'Lỗi khi lấy dữ liệu interfaces');
+      console.error('Error fetching interfaces:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [deviceId]);
+  
+  // Fetch tất cả dữ liệu
+  const refreshAllStats = useCallback(async () => {
+    await Promise.all([
+      fetchInterfaces(),
+      refreshDhcp(),
+      refreshConn()
+    ]);
+  }, [fetchInterfaces, refreshDhcp, refreshConn]);
+  
+  // Fetch dữ liệu ban đầu
+  useEffect(() => {
+    fetchInterfaces();
+  }, [fetchInterfaces]);
+  
+  // Auto refresh nếu được yêu cầu
+  useEffect(() => {
+    if (autoRefresh && deviceId) {
+      const interval = setInterval(fetchInterfaces, refreshInterval);
+      return () => clearInterval(interval);
+    }
+  }, [autoRefresh, deviceId, fetchInterfaces, refreshInterval]);
+  
+  return {
+    interfaces,
+    dhcpStats,
+    connectionStats,
+    isLoading: isLoading || dhcpLoading || connLoading,
+    error: error || dhcpError || connError,
+    refreshStats: refreshAllStats
+  };
 }
