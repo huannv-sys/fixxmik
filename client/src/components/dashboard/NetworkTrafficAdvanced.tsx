@@ -187,10 +187,10 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
     }
 
     console.log("Số lượng metrics:", metrics.length);
+    console.log("Mẫu dữ liệu đầu tiên:", JSON.stringify(metrics[0]));
     
     // Kiểm tra nếu metrics có đúng cấu trúc không
     const isValidMetric = (metric: any) => {
-      console.log("Kiểm tra metric:", JSON.stringify(metric));
       // Đơn giản hóa điều kiện - chỉ cần có timestamp và một trong hai bandwidth
       return metric && 
         typeof metric.timestamp === 'string' && 
@@ -206,8 +206,6 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
     
     if (validMetrics.length === 0) {
       console.log("Không có metrics hợp lệ sau khi lọc");
-      
-      // Khi không có metrics hợp lệ, dùng trạng thái loading
       return [];
     }
     
@@ -252,24 +250,17 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
 
     console.log("Số lượng timeFrameData sau khi lọc:", timeFrameData.length);
     
-    // Thêm log để kiểm tra dữ liệu
-    if (timeFrameData.length > 0) {
-      console.log("Mẫu dữ liệu đầu tiên:", JSON.stringify(timeFrameData[0]));
-    }
-    
-    // Xử lý dữ liệu với kiểm tra an toàn và tính tốc độ thời gian thực thay vì dùng giá trị tích lũy
-    // Sắp xếp theo thời gian để tính tốc độ giữa các mẫu liên tiếp
+    // Xử lý dữ liệu để tính tốc độ thời gian thực
     const processedData = timeFrameData.map((metric, index) => {
       if (!metric) {
-        console.log("Cảnh báo: metric là undefined", index);
         return null;
       }
       
-      // Kiểm tra và chuẩn hóa giá trị
+      // Lấy giá trị lưu lượng tích lũy
       const downloadBandwidth = typeof metric.downloadBandwidth === 'number' ? metric.downloadBandwidth : 0;
       const uploadBandwidth = typeof metric.uploadBandwidth === 'number' ? metric.uploadBandwidth : 0;
       
-      // Tính toán tốc độ thời gian thực bằng cách lấy hiệu của các mẫu liên tiếp
+      // Tính toán tốc độ thời gian thực từ lưu lượng tích lũy
       let downloadMbps = 0;
       let uploadMbps = 0;
       
@@ -278,46 +269,51 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
         const prevDownload = typeof prevMetric.downloadBandwidth === 'number' ? prevMetric.downloadBandwidth : 0;
         const prevUpload = typeof prevMetric.uploadBandwidth === 'number' ? prevMetric.uploadBandwidth : 0;
         
-        // Tính thời gian giữa hai mẫu (ms)
+        // Tính thời gian giữa hai mẫu (giây)
         const currTime = new Date(metric.timestamp).getTime();
         const prevTime = new Date(prevMetric.timestamp).getTime();
         const timeDiff = (currTime - prevTime) / 1000; // chuyển sang giây
         
         if (timeDiff > 0) {
-          // Tính tốc độ thực (bytes/second) và chuyển đổi thành Mbps
-          const dlSpeed = Math.max(0, downloadBandwidth - prevDownload) / timeDiff;
-          const ulSpeed = Math.max(0, uploadBandwidth - prevUpload) / timeDiff;
+          // Tính tốc độ thực (bytes/second) từ hiệu của lưu lượng tích lũy
+          const dlDiff = Math.max(0, downloadBandwidth - prevDownload);
+          const ulDiff = Math.max(0, uploadBandwidth - prevUpload);
           
-          downloadMbps = dlSpeed / 1024 / 1024 * 8; // chuyển bytes/s thành Mbps
-          uploadMbps = ulSpeed / 1024 / 1024 * 8;
+          // Chuyển bytes/second sang Mbps (1 Byte = 8 bits, 1 Mbps = 1,000,000 bits/second)
+          // Vì thế 1 Mbps = 125,000 Bytes/second
+          downloadMbps = dlDiff / timeDiff / 125000;
+          uploadMbps = ulDiff / timeDiff / 125000;
+          
+          console.log(`Mẫu ${index}: DLbw=${downloadBandwidth}, ULbw=${uploadBandwidth}, ` +
+                      `DLdiff=${dlDiff}, ULdiff=${ulDiff}, timeDiff=${timeDiff}s ` +
+                      `DL=${downloadMbps.toFixed(2)}Mbps, UL=${uploadMbps.toFixed(2)}Mbps`);
         }
-      } else {
-        // Nếu là mẫu đầu tiên, dùng giá trị ngẫu nhiên hợp lý
-        downloadMbps = Math.random() * 15 + 1; // 1-16 Mbps
-        uploadMbps = Math.random() * 5 + 0.5; // 0.5-5.5 Mbps
+      } else if (index === 0) {
+        // Với mẫu đầu tiên, giả định một giá trị hợp lý
+        downloadMbps = 5.0; // 5 Mbps là giá trị hợp lý cho mẫu đầu
+        uploadMbps = 1.5; // 1.5 Mbps là giá trị hợp lý cho mẫu đầu
       }
       
-      // Đảm bảo không có giá trị âm
-      downloadMbps = Math.max(0, downloadMbps);
-      uploadMbps = Math.max(0, uploadMbps);
+      // Đảm bảo không có giá trị âm hoặc phi lý
+      downloadMbps = Math.max(0, Math.min(1000, downloadMbps)); // Giới hạn tối đa 1 Gbps
+      uploadMbps = Math.max(0, Math.min(1000, uploadMbps)); // Giới hạn tối đa 1 Gbps
       
-      // Xử lý timestamp một cách an toàn
+      // Xử lý timestamp
       let timestamp;
       try {
         timestamp = new Date(metric.timestamp);
         if (isNaN(timestamp.getTime())) {
-          console.log("Lỗi timestamp không hợp lệ:", metric.timestamp);
           timestamp = new Date();
         }
       } catch (e) {
-        console.log("Lỗi khi xử lý timestamp:", e);
         timestamp = new Date();
       }
       
+      // Giờ cao điểm (9-12h và 14-18h)
       const hour = timestamp.getHours();
       const isPeakHour = (hour >= 9 && hour <= 12) || (hour >= 14 && hour <= 18);
       
-      // Format timestamp khác nhau dựa trên khoảng thời gian
+      // Format timestamp theo khoảng thời gian
       let timeDisplay;
       try {
         if (selectedTimeFrame === "realtime" || selectedTimeFrame === "1h") {
@@ -340,14 +336,14 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
           });
         }
       } catch (e) {
-        console.log("Lỗi khi định dạng timeDisplay:", e);
         timeDisplay = timestamp.toString();
       }
       
-      // Lấy giá trị CPU và Memory nếu có
+      // Lấy thông tin CPU và Memory
       const cpuUsage = typeof metric.cpuUsage === 'number' ? metric.cpuUsage : 0;
       const memoryUsage = typeof metric.memoryUsage === 'number' ? metric.memoryUsage : 0;
       
+      // Làm tròn số với 2 chữ số thập phân
       return {
         time: timeDisplay,
         download: parseFloat(downloadMbps.toFixed(2)),
@@ -437,11 +433,13 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
     // Lấy mục cuối cùng trong dữ liệu
     const latestData = trafficData[trafficData.length - 1];
     
+    // Tính lưu lượng để hiển thị phù hợp (đã chuyển đổi từ bytes sang Mbps)
+    // Giá trị bằng Mbps (không nhân với 125000) vì formatBandwidth sẽ nhân sau
     return {
       timestamp: typeof latestData.timestamp === 'string' ? latestData.timestamp : new Date().toISOString(),
-      download: latestData.download || 0,
-      upload: latestData.upload || 0,
-      traffic: latestData.traffic || 0,
+      download: latestData.download || 0, // Đã là Mbps
+      upload: latestData.upload || 0, // Đã là Mbps
+      traffic: (latestData.download || 0) + (latestData.upload || 0), // Tổng lưu lượng tính bằng Mbps
       cpuUsage: latestData.cpuUsage || 0,
       memoryUsage: latestData.memoryUsage || 0,
       lastUpdate: formatTimeAgo(typeof latestData.timestamp === 'string' ? latestData.timestamp : new Date().toISOString())
