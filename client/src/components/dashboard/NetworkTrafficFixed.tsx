@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, Legend, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, CartesianGrid, BarChart, Bar, Legend, ResponsiveContainer, YAxis, Tooltip } from 'recharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -18,6 +18,8 @@ import {
 import { useTrafficMetrics } from '@/hooks/use-traffic-metrics';
 import { useNetworkStats } from '@/hooks/use-network-stats';
 import { formatBytes, formatBitrate, formatBandwidth } from '@/hooks/use-data-formatter';
+import { FormattedYAxis } from './FixedYAxisFormatter';
+import { FormattedTooltip } from './FormattedTooltip';
 import { Button } from '@/components/ui/button';
 
 interface NetworkTrafficFixedProps {
@@ -113,16 +115,9 @@ export default function NetworkTrafficFixed({ deviceId }: NetworkTrafficFixedPro
     return formattedData;
   };
   
-  // Format traffic values for display
+  // Việc định dạng băng thông bây giờ sử dụng hook formatBandwidth từ use-data-formatter
   const formatMbps = (bytesPerSecond: number) => {
-    // Chuyển bytes/s sang Mbps (1 Mbps = 125000 bytes/s)
-    const mbps = bytesPerSecond / 125000;
-    
-    if (mbps >= 1000) {
-      return `${(mbps / 1000).toFixed(2)} Gbps`;
-    } else {
-      return `${mbps.toFixed(2)} Mbps`;
-    }
+    return formatBandwidth(bytesPerSecond, 2);
   };
   
   // Tính tổng lưu lượng hiện tại và lâu dài
