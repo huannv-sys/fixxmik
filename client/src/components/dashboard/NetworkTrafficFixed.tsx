@@ -942,12 +942,12 @@ export default function NetworkTrafficFixed({ deviceId }: NetworkTrafficFixedPro
                       <YAxis 
                         domain={[0, yAxisMax]}
                         ticks={getYAxisTicks()}
-                        tickFormatter={(value) => `${value} Mbps`}
+                        tickFormatter={(value) => formatBandwidth(Number(value)*125000, 1)}
                         tick={{ fontSize: 10 }}
                         stroke="#666"
                       />
                       <Tooltip 
-                        formatter={(value) => [`${Number(value).toFixed(2)} Mbps`, '']}
+                        formatter={(value) => [formatBandwidth(Number(value)*125000, 2), '']}
                         contentStyle={{ 
                           backgroundColor: 'rgba(23, 23, 23, 0.8)', 
                           border: 'none',
