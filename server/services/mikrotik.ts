@@ -227,11 +227,40 @@ class MikrotikClient {
       
       // Chuyển đổi params sang định dạng RouterOS API
       let apiParams: any = {};
+      
       if (params && params.length > 0) {
-        if (typeof params[0] === 'object') {
+        console.log(`Command params:`, JSON.stringify(params));
+        
+        // Nếu params chỉ có một phần tử và là object
+        if (params.length === 1 && typeof params[0] === 'object') {
           apiParams = params[0];
+        } 
+        // Nếu params là mảng các object, cần xử lý đặc biệt cho một số lệnh
+        else if (Array.isArray(params) && params.length > 0) {
+          // Trong trường hợp /log/print, chúng ta cần xử lý query params theo cách khác
+          if (command === '/log/print') {
+            // RouterOS API cần một object nếu có nhiều query params
+            const combinedParams: any = {};
+            
+            // Gộp tất cả các params thành một object duy nhất
+            for (const param of params) {
+              if (typeof param === 'object') {
+                Object.assign(combinedParams, param);
+              }
+            }
+            
+            apiParams = combinedParams;
+            console.log(`Processed log params:`, JSON.stringify(apiParams));
+          } else {
+            // Đối với các lệnh khác, sử dụng param đầu tiên nếu là object
+            if (typeof params[0] === 'object') {
+              apiParams = params[0];
+            }
+          }
         }
       }
+      
+      console.log(`Final apiParams:`, JSON.stringify(apiParams));
       
       // Thực thi lệnh
       const result = await this.connection.write(fullCommand, apiParams);

@@ -166,17 +166,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get device logs
   router.get("/devices/:id/logs", async (req: Request, res: Response) => {
+    console.log(`[LOGS API] Received logs request for device ${req.params.id}`);
+    console.log(`[LOGS API] Query parameters:`, req.query);
     try {
       const deviceId = parseInt(req.params.id);
       
       // Xác thực và kiểm tra thiết bị
       const device = await storage.getDevice(deviceId);
       if (!device) {
+        console.log(`[LOGS API] Device not found: ${deviceId}`);
         return res.status(404).json({ 
           success: false, 
           message: "Không tìm thấy thiết bị" 
         });
       }
+      
+      console.log(`[LOGS API] Device found: ${device.name} (${device.ipAddress})`);
       
       // Xử lý các tham số truy vấn để lọc logs
       const options: {
@@ -210,13 +215,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.query.dateFrom) options.dateFrom = req.query.dateFrom as string;
       if (req.query.dateTo) options.dateTo = req.query.dateTo as string;
       
+      console.log(`[LOGS API] Final options for getDeviceLogs:`, options);
+      
       // Lấy logs từ MikroTik service
       const result = await mikrotikService.getDeviceLogs(deviceId, options);
       
+      console.log(`[LOGS API] getDeviceLogs result:`, { 
+        success: result.success, 
+        message: result.message, 
+        dataLength: result.data?.length || 0,
+        dataSample: result.data && result.data.length > 0 ? result.data[0] : null
+      });
+      
       if (!result.success) {
+        console.log(`[LOGS API] Failed to get logs:`, result.message);
         return res.status(500).json(result);
       }
       
+      console.log(`[LOGS API] Successfully retrieved ${result.data?.length || 0} logs`);
       res.json(result);
     } catch (error) {
       console.error("Lỗi khi lấy logs từ thiết bị:", error);
