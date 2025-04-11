@@ -169,8 +169,10 @@ const InterfaceTable: React.FC<InterfaceTableProps> = ({ deviceId }) => {
         (iface.type === 'cap' || iface.type === 'CAP') || 
         (iface.name && (iface.name.toLowerCase().includes('cap') || iface.name.toLowerCase().includes('wlan')));
       
-      // Đảm bảo interfaces CAP luôn hiển thị UP khi không bị vô hiệu hóa
-      const isUp = iface.isUp || (isCAPInterface && !iface.disabled);
+      // Một interface CHỈ được coi là UP khi:
+      // 1. Nó có trạng thái isUp = true từ server, VÀ
+      // 2. Nó không bị disabled
+      const isUp = iface.isUp && !iface.disabled;
       
       return {
         id: iface.id,
