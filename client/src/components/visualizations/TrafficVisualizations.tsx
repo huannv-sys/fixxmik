@@ -246,8 +246,15 @@ export default function TrafficVisualizations({
     data.forEach((item: any) => {
       totalDownload += item.download || 0;
       totalUpload += item.upload || 0;
-      peakDownload = Math.max(peakDownload, item.download || 0);
-      peakUpload = Math.max(peakUpload, item.upload || 0);
+      
+      // Giới hạn giá trị tối đa của peakDownload và peakUpload để tránh hiển thị giá trị không thực tế
+      // 1073741824 bytes = 1 GB/s (~8 Gbps) là giới hạn hợp lý cho mạng gia đình/văn phòng nhỏ
+      const reasonableMaxBytes = 1073741824; // 1 GB/s
+      const downloadBytes = Math.min(reasonableMaxBytes, item.download || 0);
+      const uploadBytes = Math.min(reasonableMaxBytes, item.upload || 0);
+      
+      peakDownload = Math.max(peakDownload, downloadBytes);
+      peakUpload = Math.max(peakUpload, uploadBytes);
     });
     
     const avgDownload = totalDownload / data.length;
