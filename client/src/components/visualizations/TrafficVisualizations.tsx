@@ -193,10 +193,10 @@ export default function TrafficVisualizations({
     
     return anomalyData.data.map((item: any) => ({
       timestamp: new Date(item.timestamp).toLocaleString(),
-      source_ip: item.sourceIp,
-      destination_ip: item.destinationIp,
+      source_ip: item.details?.sourceIp || "Unknown",
+      destination_ip: item.details?.destinationIp || "Unknown",
       probability: item.probability,
-      anomaly_type: item.anomalyType || "Unknown",
+      anomaly_type: item.details?.anomalyType || "Unknown",
     }));
   };
   
@@ -652,7 +652,7 @@ export default function TrafficVisualizations({
               <Card>
                 <CardContent className="pt-6">
                   <div className="text-2xl font-bold">
-                    {anomalyStats.latestAnomalies[0]?.source_ip || "N/A"}
+                    {anomalyStats.latestAnomalies[0]?.details?.sourceIp || "N/A"}
                   </div>
                   <p className="text-sm text-gray-500">Nguồn xâm nhập gần nhất</p>
                 </CardContent>
