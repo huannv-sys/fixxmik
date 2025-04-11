@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Table, Badge } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';  
+import Table from 'react-bootstrap/Table';
+import Badge from 'react-bootstrap/Badge';
 import { useParams } from 'wouter';
 
 interface FirewallRule {
@@ -12,10 +14,15 @@ interface FirewallRule {
   srcPort?: string;
   srcAddress?: string;
   dstAddress?: string;
+  inInterface?: string;
+  outInterface?: string;
   comment?: string;
   disabled?: boolean;
   invalid?: boolean;
   dynamic?: boolean;
+  connectionState?: string;
+  connectionNat?: string;
+  rawData?: any;
 }
 
 const FirewallRulesTable: React.FC = () => {
