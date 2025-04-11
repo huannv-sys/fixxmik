@@ -2080,6 +2080,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         });
         
+        // Ghi log thông tin gỡ lỗi
+        console.log(`Số lượng filter rules đã định dạng: ${formattedFilterRules.length}`);
+        
         // Gửi kết quả kết hợp tất cả dữ liệu firewall
         res.json({
           success: true,

@@ -29,11 +29,25 @@ const FirewallRulesTable: React.FC = () => {
     const fetchRules = async () => {
       try {
         setLoading(true);
+        console.log("Fetching firewall rules for device:", deviceId);
         const response = await axios.get(`/api/devices/${deviceId}/firewall/filter`);
+        
         if (response.data.success) {
-          setRules(response.data.data || []);
+          // Kiểm tra cấu trúc của dữ liệu trả về
+          console.log("Received firewall rules data:", response.data);
+          
+          if (response.data.data && response.data.data.filterRules) {
+            // Sử dụng filterRules từ response
+            setRules(response.data.data.filterRules || []);
+            console.log("Filter rules parsed:", response.data.data.filterRules);
+          } else {
+            // Fallback nếu cấu trúc khác
+            setRules(Array.isArray(response.data.data) ? response.data.data : []);
+            console.log("Using fallback data structure");
+          }
         } else {
           setError(response.data.message || 'Không thể tải dữ liệu firewall rules');
+          console.error("API error:", response.data.message);
         }
       } catch (err: any) {
         setError(err.message || 'Đã xảy ra lỗi khi tải dữ liệu');
