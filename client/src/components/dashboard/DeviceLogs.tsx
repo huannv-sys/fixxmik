@@ -68,9 +68,10 @@ const DeviceLogs = ({ deviceId }: DeviceLogsProps) => {
     refetch,
     isRefetching
   } = useQuery<LogsResponse>({
-    queryKey: ['/api/devices', deviceId, 'logs', limit, selectedTopics],
+    queryKey: [`/api/devices/${deviceId}/logs?limit=${limit}${selectedTopics.length > 0 ? `&topics=${selectedTopics.join(',')}` : ''}`],
     refetchInterval: 30000, // Refresh logs mỗi 30 giây
-    enabled: !!deviceId // Chỉ truy vấn khi deviceId có giá trị
+    enabled: !!deviceId, // Chỉ truy vấn khi deviceId có giá trị
+    retry: 3 // Thử lại 3 lần nếu có lỗi
   });
 
   // Tạo danh sách các topics duy nhất từ logs

@@ -57,7 +57,7 @@ interface ConnectionStore {
  * MikroTik Client Class - Quản lý kết nối tới thiết bị MikroTik
  */
 class MikrotikClient {
-  private connected: boolean = false;
+  public connected: boolean = false;  // Đổi từ private thành public để có thể truy cập từ bên ngoài
   private ipAddress: string;
   private username: string;
   private password: string;
@@ -749,7 +749,7 @@ export class MikrotikService {
         };
       }
       
-      // Kiểm tra kết nối
+      // Kiểm tra kết nối - đã được đổi sang public để truy cập
       console.log(`[LOG API] Client connection status:`, client.connected);
       
       try {
@@ -760,23 +760,26 @@ export class MikrotikService {
         if (!logs || !Array.isArray(logs) || logs.length === 0) {
           console.log(`[LOG API] No logs with basic command, trying again with default params...`);
           
-          // Tạo một tham số truy vấn đơn
-          const queryParams = { "?limit": "100" };
+          // Tạo mảng tham số truy vấn thay vì object để tránh lỗi TypeScript 
+          const queryParams: Array<Record<string, string>> = [];
+          
+          // Thêm giới hạn số lượng logs
+          queryParams.push({ "?limit": "100" });
           
           // Nếu có topics, thêm vào
           if (options.topics && options.topics.length > 0) {
             const topicStr = options.topics.join(',');
-            queryParams["?topics"] = topicStr;
+            queryParams.push({ "?topics": topicStr });
           }
           
           // Thêm các tham số thời gian
-          if (options.timeFrom) queryParams["?time-from"] = options.timeFrom;
-          if (options.timeTo) queryParams["?time-to"] = options.timeTo;
-          if (options.dateFrom) queryParams["?date-from"] = options.dateFrom;
-          if (options.dateTo) queryParams["?date-to"] = options.dateTo;
+          if (options.timeFrom) queryParams.push({ "?time-from": options.timeFrom });
+          if (options.timeTo) queryParams.push({ "?time-to": options.timeTo });
+          if (options.dateFrom) queryParams.push({ "?date-from": options.dateFrom });
+          if (options.dateTo) queryParams.push({ "?date-to": options.dateTo });
           
-          console.log(`[LOG API] Executing with simple params object:`, JSON.stringify(queryParams));
-          logs = await client.executeCommand('/log/print', [queryParams]);
+          console.log(`[LOG API] Executing with simple params array:`, JSON.stringify(queryParams));
+          logs = await client.executeCommand('/log/print', queryParams);
         }
         
         // Nếu vẫn không có logs, thử cách cũ
