@@ -726,12 +726,12 @@ export class MikrotikService {
     } = {}
   ): Promise<{ success: boolean; data?: any[]; message: string }> {
     try {
-      console.log(`Fetching system logs for device ID ${deviceId} with options:`, JSON.stringify(options));
+      console.log(`[LOG API] Fetching system logs for device ID ${deviceId} with options:`, JSON.stringify(options));
       
       // Kết nối đến thiết bị nếu chưa có kết nối
       let client = this.clients.get(deviceId);
       if (!client) {
-        console.log(`No existing connection to device ${deviceId}, connecting...`);
+        console.log(`[LOG API] No existing connection to device ${deviceId}, connecting...`);
         const connected = await this.connectToDevice(deviceId);
         if (!connected) {
           return {
@@ -749,41 +749,47 @@ export class MikrotikService {
         };
       }
       
-      // Xây dựng tham số truy vấn một cách chính xác cho RouterOS API
+      // Kiểm tra kết nối
+      console.log(`[LOG API] Client connection status:`, client.connected);
+      
       try {
-        // Chuẩn bị tham số lọc, sử dụng định dạng chính xác cho RouterOS API
-        const queryParams: any[] = [];
+        // Thử lấy logs với cách đơn giản nhất trước
+        console.log(`[LOG API] Attempting to get logs with basic command first`);
+        let logs = await client.executeCommand('/log/print', [{ "?limit": "100" }]);
         
-        // Thêm giới hạn số lượng bản ghi
-        const limit = options.limit || 100;
-        queryParams.push({ "?limit": limit.toString() });
-        
-        // Thêm lọc theo topic nếu có
-        if (options.topics && options.topics.length > 0) {
-          const topicStr = options.topics.join(',');
-          queryParams.push({ "?topics": topicStr });
+        if (!logs || !Array.isArray(logs) || logs.length === 0) {
+          console.log(`[LOG API] No logs with basic command, trying again with default params...`);
+          
+          // Tạo một tham số truy vấn đơn
+          const queryParams = { "?limit": "100" };
+          
+          // Nếu có topics, thêm vào
+          if (options.topics && options.topics.length > 0) {
+            const topicStr = options.topics.join(',');
+            queryParams["?topics"] = topicStr;
+          }
+          
+          // Thêm các tham số thời gian
+          if (options.timeFrom) queryParams["?time-from"] = options.timeFrom;
+          if (options.timeTo) queryParams["?time-to"] = options.timeTo;
+          if (options.dateFrom) queryParams["?date-from"] = options.dateFrom;
+          if (options.dateTo) queryParams["?date-to"] = options.dateTo;
+          
+          console.log(`[LOG API] Executing with simple params object:`, JSON.stringify(queryParams));
+          logs = await client.executeCommand('/log/print', [queryParams]);
         }
         
-        // Thêm các tham số thời gian
-        if (options.timeFrom) queryParams.push({ "?time-from": options.timeFrom });
-        if (options.timeTo) queryParams.push({ "?time-to": options.timeTo });
-        if (options.dateFrom) queryParams.push({ "?date-from": options.dateFrom });
-        if (options.dateTo) queryParams.push({ "?date-to": options.dateTo });
-        
-        console.log(`Executing /log/print with params:`, JSON.stringify(queryParams));
-        
-        // Thực hiện truy vấn trực tiếp thay vì qua client.getLogs
-        let logs = await client.executeCommand('/log/print', queryParams);
+        // Nếu vẫn không có logs, thử cách cũ
+        if (!logs || !Array.isArray(logs) || logs.length === 0) {
+          console.log(`[LOG API] Still no logs, trying raw command...`);
+          logs = await client.executeCommand('/log/print');
+        }
         
         // Kiểm tra kết quả
-        if (!logs || logs.length === 0) {
-          console.log(`No logs found, trying with simpler parameters...`);
-          // Thử với tham số đơn giản hơn
-          logs = await client.executeCommand('/log/print', [{ "?limit": "50" }]);
-        }
-        
-        if (logs && logs.length > 0) {
-          console.log(`Successfully retrieved ${logs.length} logs`);
+        if (logs && Array.isArray(logs) && logs.length > 0) {
+          console.log(`[LOG API] Successfully retrieved ${logs.length} logs. Sample:`, 
+            logs.length > 0 ? JSON.stringify(logs[0]) : 'No logs'
+          );
           
           // Format logs để dễ hiển thị
           const formattedLogs = logs.map((log: any) => ({
@@ -799,39 +805,32 @@ export class MikrotikService {
             message: `Đã lấy ${logs.length} bản ghi log từ thiết bị`
           };
         } else {
-          console.log(`Still no logs found, final attempt with basic command`);
-          logs = await client.executeCommand('/log/print');
-          
-          if (logs && logs.length > 0) {
-            const formattedLogs = logs.map((log: any) => ({
-              id: log['.id'] || '',
-              time: log.time || '',
-              topics: log.topics || '',
-              message: log.message || ''
-            }));
-            
-            return {
-              success: true,
-              data: formattedLogs,
-              message: `Đã lấy ${logs.length} bản ghi log từ thiết bị (last resort)`
-            };
-          } else {
-            return {
-              success: false,
-              data: [],
-              message: `Không tìm thấy bản ghi log nào`
-            };
+          console.log(`[LOG API] All attempts failed, no logs found.`);
+          // Thử sử dụng một lệnh khác để kiểm tra xem RouterOS API có hoạt động không
+          try {
+            const systemResource = await client.executeCommand('/system/resource/print');
+            console.log(`[LOG API] System resource command works:`, 
+              systemResource ? 'Yes' : 'No'
+            );
+          } catch (testError) {
+            console.error(`[LOG API] Test command also failed:`, testError);
           }
+          
+          return {
+            success: false,
+            data: [],
+            message: `Không tìm thấy bản ghi log nào sau khi thử nhiều cách khác nhau.`
+          };
         }
       } catch (commandError) {
-        console.error(`Error executing log command:`, commandError);
+        console.error(`[LOG API] Error executing log command:`, commandError);
         return {
           success: false,
           message: `Lỗi khi thực hiện lệnh lấy logs: ${commandError instanceof Error ? commandError.message : String(commandError)}`
         };
       }
     } catch (error) {
-      console.error(`Error getting logs from device ${deviceId}:`, error);
+      console.error(`[LOG API] Error getting logs from device ${deviceId}:`, error);
       return {
         success: false,
         message: `Lỗi khi lấy logs: ${error instanceof Error ? error.message : String(error)}`
