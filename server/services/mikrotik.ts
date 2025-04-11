@@ -656,52 +656,129 @@ export class MikrotikService {
   async getLTPPConnections(deviceId: number): Promise<PPPConnection[]> {
     try {
       const client = await this.getClient(deviceId);
+      console.log(`Getting PPP connections for device ${deviceId}...`);
       
-      // Lấy dữ liệu kết nối PPPoE với thông tin chi tiết hơn
+      // Lấy toàn bộ dữ liệu interface để có thông tin đầy đủ
+      const interfaces = await client.executeCommand('/interface/print', [
+        { "detail": "" }
+      ]);
+      console.log(`Found ${interfaces?.length || 0} total interfaces`);
+      
+      // Tạo map theo tên interface để tra cứu nhanh
+      const interfaceMap = new Map();
+      if (Array.isArray(interfaces)) {
+        interfaces.forEach(iface => {
+          interfaceMap.set(iface.name, iface);
+        });
+      }
+      
+      // Lấy dữ liệu kết nối PPPoE chi tiết
       const pppoeSessions = await client.executeCommand('/interface/pppoe-client/print', [
-        { '.proplist': 'name,uptime,user,service-name,ac-name,mtu,status,running,disabled,comment,mac-address,tx-byte,rx-byte' },
+        { "detail": "" }
       ]);
+      console.log(`Found ${pppoeSessions?.length || 0} PPPoE client connections`);
       
-      // Lấy dữ liệu L2TP với thông tin chi tiết hơn
-      const l2tpConns = await client.executeCommand('/interface/l2tp-server/print', [
-        { '.proplist': 'name,uptime,user,active-address,l2mtu,comment,running,disabled,mac-address,tx-byte,rx-byte' },
+      // Lấy kết nối L2TP client 
+      const l2tpClientConns = await client.executeCommand('/interface/l2tp-client/print', [
+        { "detail": "" }
       ]);
+      console.log(`Found ${l2tpClientConns?.length || 0} L2TP client connections`);
       
-      // Kết hợp dữ liệu và thêm các thông tin cần thiết
-      const allConnections: PPPConnection[] = [
-        ...(Array.isArray(pppoeSessions) ? pppoeSessions.map(session => ({
-          name: session.name,
-          type: 'pppoe' as const,
-          user: session.user,
-          uptime: session.uptime,
-          activeAddress: session['ac-name'] || undefined,
-          service: session['service-name'],
-          status: session.status || undefined,
-          running: session.running,
-          disabled: session.disabled,
-          comment: session.comment || `Kết nối PPPoE: ${session.user || 'Unknown'}`,
-          macAddress: session['mac-address'],
-          txByte: session['tx-byte'],
-          rxByte: session['rx-byte'],
-          mtu: session.mtu
-        })) : []), 
-        ...(Array.isArray(l2tpConns) ? l2tpConns.map(conn => ({
-          name: conn.name,
-          type: 'l2tp' as const,
-          user: conn.user,
-          uptime: conn.uptime,
-          activeAddress: conn['active-address'],
-          status: undefined, // Use undefined instead of null for compatibility
-          running: conn.running,
-          disabled: conn.disabled,
-          comment: conn.comment || `Kết nối L2TP VPN: ${conn.user || conn['active-address'] || 'Unknown'}`,
-          macAddress: conn['mac-address'],
-          txByte: conn['tx-byte'],
-          rxByte: conn['rx-byte'],
-          mtu: conn.l2mtu
-        })) : [])
-      ];
+      // Tạo mảng kết quả từ dữ liệu kết hợp
+      const allConnections: PPPConnection[] = [];
       
+      // Thêm kết nối PPPoE
+      if (Array.isArray(pppoeSessions)) {
+        for (const session of pppoeSessions) {
+          // Lấy thông tin interface tương ứng (để có rx-byte, tx-byte chính xác)
+          const iface = interfaceMap.get(session.name);
+          
+          allConnections.push({
+            name: session.name,
+            type: 'pppoe' as const,
+            user: session.user,
+            uptime: session.uptime,
+            // Ưu tiên thông tin từ interface
+            activeAddress: session['ac-name'] || session['service-name'] || '',
+            service: session['service-name'] || 'pppoe',
+            // Đảm bảo trạng thái chính xác
+            status: (session.running === 'true' || iface?.running === 'true') ? 'connected' : 'disconnected',
+            running: session.running === 'true' || iface?.running === 'true',
+            disabled: session.disabled === 'true' || iface?.disabled === 'true',
+            comment: session.comment || `Kết nối PPPoE: ${session.user || 'Unknown'}`,
+            macAddress: session['mac-address'] || iface?.['mac-address'] || '',
+            // Sử dụng dữ liệu từ interface nếu có, không thì từ session
+            txByte: parseInt(iface?.['tx-byte'] || session['tx-byte'] || '0'),
+            rxByte: parseInt(iface?.['rx-byte'] || session['rx-byte'] || '0'),
+            mtu: parseInt(session.mtu || iface?.mtu || '1500')
+          });
+        }
+      }
+      
+      // Thêm kết nối L2TP client
+      if (Array.isArray(l2tpClientConns)) {
+        for (const conn of l2tpClientConns) {
+          // Lấy thông tin interface tương ứng
+          const iface = interfaceMap.get(conn.name); 
+          
+          allConnections.push({
+            name: conn.name,
+            type: 'l2tp' as const,
+            user: conn.user || '',
+            uptime: conn.uptime || '0s',
+            activeAddress: conn['connect-to'] || '',
+            service: 'l2tp-out',
+            // Đảm bảo trạng thái chính xác
+            status: (conn.running === 'true' || iface?.running === 'true') ? 'connected' : 'disconnected',
+            running: conn.running === 'true' || iface?.running === 'true',
+            disabled: conn.disabled === 'true' || iface?.disabled === 'true',
+            comment: conn.comment || `Kết nối L2TP VPN: ${conn.user || conn['connect-to'] || 'Unknown'}`,
+            macAddress: conn['mac-address'] || iface?.['mac-address'] || '',
+            // Sử dụng dữ liệu từ interface nếu có, không thì từ session
+            txByte: parseInt(iface?.['tx-byte'] || conn['tx-byte'] || '0'),
+            rxByte: parseInt(iface?.['rx-byte'] || conn['rx-byte'] || '0'),
+            mtu: parseInt(conn.mtu || iface?.mtu || '1500')
+          });
+        }
+      }
+      
+      // Thêm cả L2TP server connections (dành cho máy chủ VPN)
+      try {
+        const l2tpServerConns = await client.executeCommand('/interface/l2tp-server/print', [
+          { "detail": "" }
+        ]);
+        console.log(`Found ${l2tpServerConns?.length || 0} L2TP server connections`);
+        
+        if (Array.isArray(l2tpServerConns) && l2tpServerConns.length > 0) {
+          for (const conn of l2tpServerConns) {
+            // Lấy thông tin interface tương ứng
+            const iface = interfaceMap.get(conn.name);
+            
+            allConnections.push({
+              name: conn.name || `l2tp-in${allConnections.length + 1}`,
+              type: 'l2tp' as const,
+              user: conn.user || '',
+              uptime: conn.uptime || '0s',
+              activeAddress: conn['active-address'] || '',
+              service: 'l2tp-in',
+              // Đảm bảo trạng thái chính xác
+              status: (conn.running === 'true' || iface?.running === 'true') ? 'connected' : 'disconnected',
+              running: conn.running === 'true' || iface?.running === 'true',
+              disabled: conn.disabled === 'true' || iface?.disabled === 'true',
+              comment: conn.comment || `Kết nối L2TP đến máy chủ: ${conn.user || 'Unknown'}`,
+              macAddress: conn['mac-address'] || iface?.['mac-address'] || '',
+              // Sử dụng dữ liệu từ interface nếu có, không thì từ kết nối
+              txByte: parseInt(iface?.['tx-byte'] || conn['tx-byte'] || '0'),
+              rxByte: parseInt(iface?.['rx-byte'] || conn['rx-byte'] || '0'),
+              mtu: parseInt(conn.l2mtu || iface?.mtu || '1500')
+            });
+          }
+        }
+      } catch (l2tpServerError) {
+        console.log(`Could not get L2TP server connections: ${l2tpServerError}`);
+      }
+      
+      console.log(`Returning ${allConnections.length} PPP/L2TP connections with data`);
       return allConnections;
     } catch (error) {
       console.error(`Error getting PPPOE/L2TP connections for device ${deviceId}:`, error);
