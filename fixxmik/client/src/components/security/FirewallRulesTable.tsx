@@ -3,6 +3,7 @@ import axios from 'axios';
 import Button from 'react-bootstrap/Button';  
 import Table from 'react-bootstrap/Table';
 import Badge from 'react-bootstrap/Badge';
+import Spinner from 'react-bootstrap/Spinner'; 
 import { useParams } from 'wouter';
 
 interface FirewallRule {
@@ -29,6 +30,7 @@ const FirewallRulesTable: React.FC = () => {
   const [rules, setRules] = useState<FirewallRule[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [processingRules, setProcessingRules] = useState<Record<string, boolean>>({});
   const params = useParams();
   const deviceId = params.deviceId || "1"; // Mặc định là thiết bị 1 nếu không có
 
@@ -67,6 +69,43 @@ const FirewallRulesTable: React.FC = () => {
     fetchRules();
   }, [deviceId]);
 
+  // Xử lý bật/tắt rule
+  const handleToggleRule = async (ruleId: string) => {
+    try {
+      // Đánh dấu rule đang được xử lý
+      setProcessingRules(prev => ({ ...prev, [ruleId]: true }));
+      
+      // Gọi API để toggle rule
+      const response = await axios.post(`/api/devices/${deviceId}/firewall/filter/${ruleId}/toggle`);
+      
+      if (response.data.success) {
+        // Cập nhật lại state khi thành công
+        setRules(prevRules => 
+          prevRules.map(rule => 
+            rule.id === ruleId 
+              ? { ...rule, disabled: response.data.data.disabled } 
+              : rule
+          )
+        );
+        
+        // Hiển thị thông báo thành công
+        console.log(`Rule ${ruleId} đã được ${response.data.data.disabled ? 'tắt' : 'bật'}`);
+      } else {
+        // Xử lý lỗi từ API
+        console.error('Lỗi khi toggle rule:', response.data.message);
+      }
+    } catch (err: any) {
+      console.error('Lỗi khi gọi API toggle rule:', err.message);
+    } finally {
+      // Xóa trạng thái xử lý
+      setProcessingRules(prev => {
+        const newState = { ...prev };
+        delete newState[ruleId];
+        return newState;
+      });
+    }
+  };
+  
   // Render trạng thái của rule
   const renderState = (rule: FirewallRule) => {
     if (rule.disabled) {
@@ -129,8 +168,19 @@ const FirewallRulesTable: React.FC = () => {
                 <td>{rule.dstPort || '-'}</td>
                 <td>{renderState(rule)}</td>
                 <td>
-                  <Button size="sm" variant="outline-primary" className="me-2">Edit</Button>
-                  <Button size="sm" variant="outline-danger">Delete</Button>
+                  <Button 
+                    size="sm" 
+                    variant={rule.disabled ? "outline-success" : "outline-secondary"} 
+                    className="me-2"
+                    onClick={() => handleToggleRule(rule.id)}
+                    disabled={processingRules[rule.id]}
+                  >
+                    {processingRules[rule.id] 
+                      ? <><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> <span className="ms-1">Đang xử lý...</span></>
+                      : (rule.disabled ? "Bật" : "Tắt")
+                    }
+                  </Button>
+                  <Button size="sm" variant="outline-primary" className="me-2">Chi tiết</Button>
                 </td>
               </tr>
             ))}

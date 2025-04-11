@@ -2111,7 +2111,188 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // API endpoint để bật/tắt firewall rule
+  router.post("/devices/:id/firewall/filter/:ruleId/toggle", async (req: Request, res: Response) => {
+    try {
+      const deviceId = parseInt(req.params.id);
+      const ruleId = req.params.ruleId;
+
+      // Lấy thông tin thiết bị
+      const device = await storage.getDevice(deviceId);
+      if (!device) {
+        return res.status(404).json({
+          success: false,
+          message: `Không tìm thấy thiết bị với ID ${deviceId}`
+        });
+      }
+
+      // Kết nối đến thiết bị
+      const connected = await mikrotikService.connectToDevice(deviceId);
+      if (!connected) {
+        return res.status(500).json({
+          success: false,
+          message: `Không thể kết nối đến thiết bị ${device.name}`
+        });
+      }
+
+      try {
+        // Lấy client kết nối
+        const client = mikrotikService.getClientForDevice(deviceId);
+        if (!client) {
+          return res.status(500).json({
+            success: false,
+            message: `Không thể lấy client kết nối cho thiết bị ${device.name}`
+          });
+        }
+
+        // Lấy thông tin rule hiện tại
+        const ruleInfo = await client.executeCommand('/ip/firewall/filter/print', [
+          `?.id=${ruleId}`
+        ]);
+
+        if (!ruleInfo || ruleInfo.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: `Không tìm thấy rule với ID ${ruleId}`
+          });
+        }
+
+        const currentRule = ruleInfo[0];
+        const isDisabled = currentRule.disabled === 'true';
+
+        // Thực hiện lệnh để bật/tắt rule
+        const toggleCommand = isDisabled ? 'enable' : 'disable';
+        await client.executeCommand(`/ip/firewall/filter/${toggleCommand}`, [
+          `=.id=${ruleId}`
+        ]);
+
+        // Gửi kết quả
+        res.json({
+          success: true,
+          data: {
+            id: ruleId,
+            disabled: !isDisabled,
+            action: toggleCommand
+          },
+          message: `Đã ${toggleCommand === 'enable' ? 'bật' : 'tắt'} rule firewall thành công`
+        });
+      } catch (err) {
+        console.error(`Lỗi khi toggle firewall rule:`, err);
+        res.status(500).json({
+          success: false,
+          message: `Lỗi khi toggle firewall rule: ${err instanceof Error ? err.message : String(err)}`
+        });
+      } finally {
+        // Ngắt kết nối đến thiết bị khi hoàn thành
+        await mikrotikService.disconnectFromDevice(deviceId);
+      }
+    } catch (error) {
+      console.error(`Lỗi xử lý request:`, error);
+      res.status(500).json({
+        success: false,
+        message: `Lỗi xử lý request: ${error instanceof Error ? error.message : String(error)}`
+      });
+    }
+  });
+  
   // API lấy system log từ thiết bị Mikrotik
+  // API endpoint để bật/tắt firewall rule
+  router.post("/devices/:deviceId/firewall/filter/:ruleId/toggle", async (req: Request, res: Response) => {
+    try {
+      const deviceId = parseInt(req.params.deviceId);
+      const ruleId = req.params.ruleId;
+      
+      // Lấy thông tin thiết bị từ cơ sở dữ liệu
+      const device = await storage.getDevice(deviceId);
+      
+      if (!device) {
+        return res.status(404).json({
+          success: false,
+          message: `Không tìm thấy thiết bị với ID ${deviceId}`
+        });
+      }
+      
+      // Kết nối đến thiết bị Mikrotik
+      const connected = await mikrotikService.connectToDevice(deviceId);
+      if (!connected) {
+        return res.status(500).json({
+          success: false,
+          message: `Không thể kết nối đến thiết bị ${device.name}`
+        });
+      }
+      
+      try {
+        // Lấy client kết nối
+        const client = mikrotikService.getClientForDevice(deviceId);
+        if (!client) {
+          return res.status(500).json({
+            success: false,
+            message: `Không thể lấy client kết nối cho thiết bị ${device.name}`
+          });
+        }
+        
+        // Đầu tiên lấy thông tin rule hiện tại để biết trạng thái
+        const currentRule = await client.executeCommand('/ip/firewall/filter/print', [
+          `?.id=${ruleId}`
+        ]);
+        
+        if (!currentRule || currentRule.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: `Không tìm thấy rule với ID ${ruleId}`
+          });
+        }
+        
+        // Xác định trạng thái hiện tại và trạng thái muốn đổi
+        const isCurrentlyDisabled = currentRule[0].disabled === 'true';
+        const newDisabledState = !isCurrentlyDisabled;
+        
+        // Thực hiện lệnh để thay đổi trạng thái
+        await client.executeCommand('/ip/firewall/filter/set', [
+          `=.id=${ruleId}`,
+          `=disabled=${newDisabledState ? 'yes' : 'no'}`
+        ]);
+        
+        // Lấy lại thông tin rule sau khi đổi để kiểm tra
+        const updatedRule = await client.executeCommand('/ip/firewall/filter/print', [
+          `?.id=${ruleId}`
+        ]);
+        
+        if (!updatedRule || updatedRule.length === 0) {
+          return res.status(500).json({
+            success: false,
+            message: `Không thể cập nhật trạng thái của rule`
+          });
+        }
+        
+        // Trả về kết quả
+        res.json({
+          success: true,
+          data: {
+            id: updatedRule[0]['.id'],
+            disabled: updatedRule[0].disabled === 'true',
+            message: `Đã ${updatedRule[0].disabled === 'true' ? 'tắt' : 'bật'} rule thành công`
+          }
+        });
+      } catch (err) {
+        console.error(`Lỗi khi thay đổi trạng thái firewall rule:`, err);
+        res.status(500).json({
+          success: false,
+          message: `Lỗi khi thay đổi trạng thái firewall rule: ${err instanceof Error ? err.message : String(err)}`
+        });
+      } finally {
+        // Ngắt kết nối đến thiết bị khi hoàn thành
+        await mikrotikService.disconnectFromDevice(deviceId);
+      }
+    } catch (error) {
+      console.error(`Lỗi xử lý request:`, error);
+      res.status(500).json({
+        success: false,
+        message: `Lỗi xử lý request: ${error instanceof Error ? error.message : String(error)}`
+      });
+    }
+  });
+
   router.get("/devices/:id/system-logs", async (req: Request, res: Response) => {
     try {
       console.log("Đang xử lý yêu cầu lấy system logs...");
