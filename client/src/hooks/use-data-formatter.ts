@@ -63,11 +63,15 @@ export function formatBandwidth(bytesPerSecond: number, decimals = 2): string {
   const mbps = bytesToMbps(bytesPerSecond);
   
   // Giới hạn giá trị tối đa hiển thị để tránh biểu đồ quá lớn không hợp lý
-  const cappedMbps = Math.min(mbps, 900); // Giới hạn tốc độ hiển thị tối đa ở 900 Mbps
+  // Đối với mạng gia đình, hiếm khi vượt quá 1 Gbps (1000 Mbps)
+  const cappedMbps = Math.min(mbps, 1000);
   
-  if (cappedMbps >= 100) {
-    return `${(cappedMbps / 1000).toFixed(decimals)} Gbps`;
+  // Nếu giá trị không hợp lý (quá cao), cắt giảm xuống mức tối đa
+  const reasonableMbps = isNaN(cappedMbps) || !isFinite(cappedMbps) ? 0 : cappedMbps;
+  
+  if (reasonableMbps >= 100) {
+    return `${(reasonableMbps / 1000).toFixed(decimals)} Gbps`;
   } else {
-    return `${cappedMbps.toFixed(decimals)} Mbps`;
+    return `${reasonableMbps.toFixed(decimals)} Mbps`;
   }
 }
