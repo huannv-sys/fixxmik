@@ -578,7 +578,8 @@ export class LogAnalyzerService {
     
     const seconds = timeDiffMs / 1000;
     const bits = bytes * 8;
-    const megabits = bits / 1000000;
+    // Sửa từ 1000000 thành 1024*1024 để đảm bảo chuyển đúng đơn vị Megabits
+    const megabits = bits / (1024 * 1024);
     
     return parseFloat((megabits / seconds).toFixed(2));
   }
