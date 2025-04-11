@@ -148,11 +148,16 @@ export default function TrafficVisualizations({
       const uploadBytes = item.upload || 0;
       const totalBytes = downloadBytes + uploadBytes;
       
+      // Sửa lỗi: Chuyển đổi đúng byte sang MB sử dụng hệ số 1024*1024 thay vì 1000000
+      const downloadMB = parseFloat((downloadBytes / (1024 * 1024)).toFixed(2));
+      const uploadMB = parseFloat((uploadBytes / (1024 * 1024)).toFixed(2));
+      const totalMB = parseFloat((totalBytes / (1024 * 1024)).toFixed(2));
+      
       return {
         timestamp: new Date(item.timestamp).toLocaleTimeString(),
-        download: formatByteValue(downloadBytes, 'MB', 2),
-        upload: formatByteValue(uploadBytes, 'MB', 2),
-        total: formatByteValue(totalBytes, 'MB', 2),
+        download: downloadMB.toString(),
+        upload: uploadMB.toString(),
+        total: totalMB.toString(),
         rawDownload: downloadBytes,
         rawUpload: uploadBytes,
         rawTotal: totalBytes
