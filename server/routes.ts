@@ -2095,9 +2095,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API lấy system log từ thiết bị Mikrotik
   router.get("/devices/:id/system-logs", async (req: Request, res: Response) => {
     try {
+      console.log("Đang xử lý yêu cầu lấy system logs...");
       const deviceId = parseInt(req.params.id);
-      const topics = req.query.topics as string || '';
+      
+      // Parse các tham số từ request
+      const topicsParam = req.query.topics as string || '';
+      const topics = topicsParam ? topicsParam.split(',') : [];
       const limit = parseInt(req.query.limit as string || '100');
+      
+      // Parse các tham số thời gian nếu có
+      const timeFrom = req.query.timeFrom as string;
+      const timeTo = req.query.timeTo as string;
+      const dateFrom = req.query.dateFrom as string;
+      const dateTo = req.query.dateTo as string;
       
       // Lấy thông tin thiết bị từ cơ sở dữ liệu
       const device = await storage.getDevice(deviceId);
@@ -2109,62 +2119,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      try {
-        // Kết nối đến thiết bị Mikrotik
-        const connected = await mikrotikService.connectToDevice(deviceId);
-        if (!connected) {
-          return res.status(500).json({
-            success: false,
-            message: `Không thể kết nối đến thiết bị ${device.name} (${device.ipAddress})`
-          });
-        }
+      console.log(`Đang lấy logs cho thiết bị ${device.name} (${device.ipAddress})...`);
+      
+      // Sử dụng phương thức getDeviceLogs mới với nhiều tùy chọn
+      const result = await mikrotikService.getDeviceLogs(deviceId, {
+        topics,
+        limit,
+        timeFrom,
+        timeTo,
+        dateFrom,
+        dateTo
+      });
+      
+      if (!result.success) {
+        console.error(`Lỗi khi lấy system logs:`, result.message);
+        return res.status(500).json(result);
+      }
+      
+      // Định dạng lại logs để thêm severity nếu chưa được định dạng
+      const formattedLogs = result.data?.map((log: any) => {
+        // Kiểm tra xem log đã được định dạng bởi getDeviceLogs chưa
+        if (log.severity) return log;
         
-        // Lấy client kết nối từ service
-        const client = mikrotikService.getClientForDevice(deviceId);
-        if (!client) {
-          return res.status(500).json({
-            success: false,
-            message: `Không thể lấy client kết nối cho thiết bị ${device.name}`
-          });
-        }
-        
-        // Chuẩn bị tham số lọc
-        const params: any[] = [];
-        if (topics) {
-          params.push({ "?topics": topics });
-        }
-        
-        // Thêm giới hạn số lượng bản ghi
-        params.push({ "?limit": limit.toString() });
-        
-        // Thực hiện lệnh lấy logs
-        const logs = await client.executeCommand('/log/print', params);
-        
-        console.log(`Đã tìm thấy ${logs.length} system logs từ thiết bị ${device.name}`);
-        
-        // Định dạng lại logs để dễ hiển thị
-        const formattedLogs = logs.map((log: any) => ({
-          id: log['.id'] || '',
+        return {
+          id: log.id || log['.id'] || '',
           time: log.time || '',
           topics: log.topics || '',
           message: log.message || '',
           severity: getSeverityFromTopics(log.topics || '')
-        }));
-        
-        res.json({
-          success: true,
-          data: formattedLogs
-        });
-      } catch (err) {
-        console.error(`Lỗi khi lấy system logs:`, err);
-        res.status(500).json({
-          success: false,
-          message: `Lỗi khi lấy system logs: ${err instanceof Error ? err.message : String(err)}`
-        });
-      } finally {
-        // Ngắt kết nối khi hoàn thành
-        await mikrotikService.disconnectFromDevice(deviceId);
-      }
+        };
+      }) || [];
+      
+      console.log(`Đã tìm thấy ${formattedLogs.length} system logs từ thiết bị ${device.name}`);
+      
+      // Trả về logs đã định dạng
+      return res.json({
+        success: true,
+        data: formattedLogs,
+        message: result.message
+      });
     } catch (error) {
       console.error(`Lỗi xử lý request:`, error);
       res.status(500).json({
