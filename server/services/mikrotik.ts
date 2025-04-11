@@ -1101,6 +1101,9 @@ export class MikrotikService {
               // Cộng dồn vào tổng bandwidth
               totalDownloadBandwidth += rxBytes;
               totalUploadBandwidth += txBytes;
+              
+              // Ghi chú: Đây là tổng lượng bytes, không phải tốc độ thực tế
+              // Sẽ xử lý monitor-traffic trong một phương thức async riêng biệt
             }
           });
         }
