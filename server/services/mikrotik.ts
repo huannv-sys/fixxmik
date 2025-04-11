@@ -263,44 +263,62 @@ class MikrotikClient {
   } = {}): Promise<any[]> {
     try {
       console.log(`Fetching logs with options:`, JSON.stringify(options));
-      const { topics = [], limit = 100, timeFrom, timeTo, dateFrom, dateTo } = options;
+      const { topics = [], limit = 500, timeFrom, timeTo, dateFrom, dateTo } = options;
       
-      // Xây dựng tham số truy vấn
-      const params: any = {};
+      // Xây dựng mảng các tham số truy vấn theo định dạng RouterOS API
+      const queryParams: any[] = [];
       
-      if (limit) params.limit = limit.toString();
-      if (timeFrom) params['time-from'] = timeFrom;
-      if (timeTo) params['time-to'] = timeTo;
-      if (dateFrom) params['date-from'] = dateFrom;
-      if (dateTo) params['date-to'] = dateTo;
-
-      console.log(`Executing command with params:`, JSON.stringify(params));
-      
-      // Lấy log từ thiết bị
-      let logs = await this.executeCommand('/log/print', [params]);
-      console.log(`Retrieved ${logs?.length || 0} logs from device`);
-      
-      // Lọc theo topics nếu được chỉ định
-      if (topics.length > 0) {
-        console.log(`Filtering logs by topics:`, topics);
-        logs = logs.filter((log: any) => {
-          if (!log.topics) return false;
-          const logTopics = String(log.topics).split(',').map((t: string) => t.trim().toLowerCase());
-          return topics.some(topic => logTopics.includes(topic.toLowerCase()));
-        });
-        console.log(`After filtering by topics: ${logs.length} logs remaining`);
+      // Thêm tham số giới hạn
+      if (limit) {
+        queryParams.push({ "?limit": limit.toString() });
       }
       
-      if (logs.length > 0) {
+      // Thêm tham số lọc topic nếu có
+      if (topics && topics.length > 0) {
+        // Với RouterOS API, chúng ta cần đặt yêu cầu lọc dưới dạng "?topics=*topic*"
+        const topicQuery = topics.length === 1 
+          ? `*${topics[0]}*` 
+          : topics.map(t => `*${t}*`).join(",");
+        queryParams.push({ "?topics": topicQuery });
+      }
+      
+      // Thêm các tham số thời gian
+      if (timeFrom) queryParams.push({ "?time-from": timeFrom });
+      if (timeTo) queryParams.push({ "?time-to": timeTo });
+      if (dateFrom) queryParams.push({ "?date-from": dateFrom });
+      if (dateTo) queryParams.push({ "?date-to": dateTo });
+
+      console.log(`Executing log command with params:`, JSON.stringify(queryParams));
+      
+      // Lấy log từ thiết bị với tham số dưới dạng mảng
+      let logs = await this.executeCommand('/log/print', queryParams.length > 0 ? queryParams : undefined);
+      console.log(`Retrieved ${logs?.length || 0} logs from device`);
+      
+      // Nếu không có kết quả, thử lại với số lượng logs ít hơn
+      if (!logs || logs.length === 0) {
+        console.log("No logs found, trying with a smaller limit...");
+        const smallerLimit = Math.min(100, limit);
+        const reducedParams = queryParams.map(p => 
+          "?limit" in p ? { "?limit": smallerLimit.toString() } : p
+        );
+        logs = await this.executeCommand('/log/print', reducedParams.length > 0 ? reducedParams : undefined);
+        console.log(`Second attempt retrieved ${logs?.length || 0} logs from device`);
+      }
+      
+      if (logs?.length > 0) {
         console.log(`Sample log entry:`, JSON.stringify(logs[0]));
       } else {
         console.log(`No logs found with the specified filters`);
+        // Thử lệnh log/print đơn giản nhất để xem có lấy được logs không
+        logs = await this.executeCommand('/log/print', [{ "?limit": "10" }]);
+        console.log(`Basic log retrieval retrieved ${logs?.length || 0} logs`);
       }
       
-      return logs;
+      return logs || [];
     } catch (error) {
       console.error(`Failed to get logs from device:`, error);
-      throw new Error(`Không thể lấy logs từ thiết bị: ${error instanceof Error ? error.message : String(error)}`);
+      // Trả về mảng rỗng thay vì ném lỗi, để tránh crash ứng dụng
+      return [];
     }
   }
 }
@@ -679,6 +697,8 @@ export class MikrotikService {
     } = {}
   ): Promise<{ success: boolean; data?: any[]; message: string }> {
     try {
+      console.log(`Fetching system logs for device ID ${deviceId} with options:`, JSON.stringify(options));
+      
       // Kết nối đến thiết bị nếu chưa có kết nối
       let client = this.clients.get(deviceId);
       if (!client) {
@@ -700,14 +720,87 @@ export class MikrotikService {
         };
       }
       
-      // Lấy logs từ thiết bị
-      const logs = await client.getLogs(options);
-      
-      return {
-        success: true,
-        data: logs,
-        message: `Đã lấy ${logs.length} bản ghi log từ thiết bị`
-      };
+      // Xây dựng tham số truy vấn một cách chính xác cho RouterOS API
+      try {
+        // Chuẩn bị tham số lọc, sử dụng định dạng chính xác cho RouterOS API
+        const queryParams: any[] = [];
+        
+        // Thêm giới hạn số lượng bản ghi
+        const limit = options.limit || 100;
+        queryParams.push({ "?limit": limit.toString() });
+        
+        // Thêm lọc theo topic nếu có
+        if (options.topics && options.topics.length > 0) {
+          const topicStr = options.topics.join(',');
+          queryParams.push({ "?topics": topicStr });
+        }
+        
+        // Thêm các tham số thời gian
+        if (options.timeFrom) queryParams.push({ "?time-from": options.timeFrom });
+        if (options.timeTo) queryParams.push({ "?time-to": options.timeTo });
+        if (options.dateFrom) queryParams.push({ "?date-from": options.dateFrom });
+        if (options.dateTo) queryParams.push({ "?date-to": options.dateTo });
+        
+        console.log(`Executing /log/print with params:`, JSON.stringify(queryParams));
+        
+        // Thực hiện truy vấn trực tiếp thay vì qua client.getLogs
+        let logs = await client.executeCommand('/log/print', queryParams);
+        
+        // Kiểm tra kết quả
+        if (!logs || logs.length === 0) {
+          console.log(`No logs found, trying with simpler parameters...`);
+          // Thử với tham số đơn giản hơn
+          logs = await client.executeCommand('/log/print', [{ "?limit": "50" }]);
+        }
+        
+        if (logs && logs.length > 0) {
+          console.log(`Successfully retrieved ${logs.length} logs`);
+          
+          // Format logs để dễ hiển thị
+          const formattedLogs = logs.map((log: any) => ({
+            id: log['.id'] || '',
+            time: log.time || '',
+            topics: log.topics || '',
+            message: log.message || ''
+          }));
+          
+          return {
+            success: true,
+            data: formattedLogs,
+            message: `Đã lấy ${logs.length} bản ghi log từ thiết bị`
+          };
+        } else {
+          console.log(`Still no logs found, final attempt with basic command`);
+          logs = await client.executeCommand('/log/print');
+          
+          if (logs && logs.length > 0) {
+            const formattedLogs = logs.map((log: any) => ({
+              id: log['.id'] || '',
+              time: log.time || '',
+              topics: log.topics || '',
+              message: log.message || ''
+            }));
+            
+            return {
+              success: true,
+              data: formattedLogs,
+              message: `Đã lấy ${logs.length} bản ghi log từ thiết bị (last resort)`
+            };
+          } else {
+            return {
+              success: false,
+              data: [],
+              message: `Không tìm thấy bản ghi log nào`
+            };
+          }
+        }
+      } catch (commandError) {
+        console.error(`Error executing log command:`, commandError);
+        return {
+          success: false,
+          message: `Lỗi khi thực hiện lệnh lấy logs: ${commandError instanceof Error ? commandError.message : String(commandError)}`
+        };
+      }
     } catch (error) {
       console.error(`Error getting logs from device ${deviceId}:`, error);
       return {
