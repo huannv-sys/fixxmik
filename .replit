@@ -13,25 +13,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "run_script"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "MikrotikMonitor"
-
-[[workflows.workflow]]
-name = "run_script"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python clone_and_run.py"
 
 [[workflows.workflow]]
 name = "MikrotikMonitor"

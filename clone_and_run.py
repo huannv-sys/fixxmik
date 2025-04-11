@@ -26,15 +26,15 @@ def clone_repository():
     
     # Check if the directory already exists
     if os.path.exists("fixxmik"):
-        print("Repository directory already exists. Updating...")
-        result = execute_command("git pull", cwd="fixxmik")
+        print("Repository directory already exists. Continuing...")
+        # No need to update, just continue
     else:
         print(f"Cloning repository from {repo_url}...")
         result = execute_command(f"git clone {repo_url}")
-    
-    if result['returncode'] != 0:
-        print(f"Error during cloning: {result['stderr']}")
-        sys.exit(1)
+        
+        if result['returncode'] != 0:
+            print(f"Error during cloning: {result['stderr']}")
+            sys.exit(1)
     
     print("Repository cloned/updated successfully!")
     return os.path.abspath("fixxmik")

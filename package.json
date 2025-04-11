@@ -10,7 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "date-fns": "^4.1.0",
+    "date-fns": "^2.30.0",
     "tsx": "^4.19.3"
   }
 }
