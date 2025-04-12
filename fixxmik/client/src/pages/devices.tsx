@@ -248,8 +248,8 @@ const DevicesPage = () => {
             <DialogTrigger asChild>
               <Button>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
                 Thêm thiết bị
               </Button>
@@ -335,7 +335,7 @@ const DevicesPage = () => {
       
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
         </div>
       ) : devices && devices.length > 0 ? (
         viewMode === 'grid' ? (
@@ -368,16 +368,16 @@ const DevicesPage = () => {
                     {device.uptime && (
                       <div className="flex items-center text-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
-                          <polyline points="17 2 12 7 7 2"></polyline>
+                          <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
+                          <polyline points="17 2 12 7 7 2" />
                         </svg>
                         <span className="text-gray-700">Uptime: {formatUptime(device.uptime)}</span>
                       </div>
                     )}
                     <div className="flex items-center text-sm">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
                       </svg>
                       <span className="text-gray-700">Cập nhật cuối: {formatLastSeen(device.lastSeen)}</span>
                     </div>
@@ -463,8 +463,8 @@ const DevicesPage = () => {
               </Button>
               <Button onClick={() => setIsAddDialogOpen(true)}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
                 Thêm thiết bị
               </Button>

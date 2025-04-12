@@ -165,7 +165,7 @@ const CPUMemoryChart: React.FC<CPUMemoryChartProps> = ({ deviceId }) => {
       <div className="h-[200px]">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
           </div>
         ) : chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
@@ -206,11 +206,11 @@ const CPUMemoryChart: React.FC<CPUMemoryChartProps> = ({ deviceId }) => {
       </div>
       <div className="flex items-center justify-center mt-3 text-sm text-slate-300">
         <div className="flex items-center mr-4">
-          <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
+          <div className="w-3 h-3 rounded-full bg-blue-500 mr-1" />
           <span>CPU</span>
         </div>
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-teal-500 mr-1"></div>
+          <div className="w-3 h-3 rounded-full bg-teal-500 mr-1" />
           <span>Memory</span>
         </div>
       </div>

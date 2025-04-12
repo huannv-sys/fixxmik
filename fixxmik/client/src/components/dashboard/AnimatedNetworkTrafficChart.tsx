@@ -278,7 +278,7 @@ export const AnimatedNetworkTrafficChart: React.FC<AnimatedNetworkTrafficChartPr
           <div className="h-64 w-full">
             {isLoading ? (
               <div className="h-full w-full flex items-center justify-center">
-                <div className="animate-spin h-8 w-8 border-b-2 border-blue-500"></div>
+                <div className="animate-spin h-8 w-8 border-b-2 border-blue-500" />
               </div>
             ) : trafficData.length === 0 ? (
               <div className="h-full w-full flex items-center justify-center text-gray-400">
