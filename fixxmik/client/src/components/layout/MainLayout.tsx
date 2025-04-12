@@ -33,7 +33,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
             <div className="relative">
               <button className="text-foreground hover:text-primary focus:outline-none">
                 <Bell className="w-6 h-6" />
-                <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-destructive"></span>
+                <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-destructive" />
               </button>
             </div>
             

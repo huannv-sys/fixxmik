@@ -363,7 +363,7 @@ export default function NetworkTrafficFixed({ deviceId }: NetworkTrafficFixedPro
           <h2 className="text-md font-medium text-white">Lưu lượng mạng</h2>
         </div>
         <div className="flex justify-center items-center h-48">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-300" />
         </div>
       </div>
     );
@@ -531,7 +531,7 @@ export default function NetworkTrafficFixed({ deviceId }: NetworkTrafficFixedPro
         <div className="p-4">
           {isLoadingLogAnalysis ? (
             <div className="flex items-center justify-center h-[400px]">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
             </div>
           ) : logAnalysisError ? (
             <div className="bg-slate-950 rounded-lg p-4 shadow-md flex flex-col items-center justify-center h-[400px]">

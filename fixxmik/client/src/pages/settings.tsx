@@ -393,8 +393,8 @@ const SettingsPage = () => {
                           </Button>
                           <Button variant="destructive" size="sm">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M18 6L6 18"></path>
-                              <path d="M6 6l12 12"></path>
+                              <path d="M18 6L6 18" />
+                              <path d="M6 6l12 12" />
                             </svg>
                           </Button>
                         </div>
@@ -441,7 +441,7 @@ const SettingsPage = () => {
             <CardContent>
               <div className="card shadow-sm">
                 <div className="card-header bg-secondary text-white d-flex align-items-center">
-                  <i className="me-2 fas fa-network-wired"></i>
+                  <i className="me-2 fas fa-network-wired" />
                   <h5 className="mb-0">Quét mạng tìm thiết bị MikroTik</h5>
                 </div>
                 <div className="card-body">
@@ -467,7 +467,7 @@ const SettingsPage = () => {
                           className="ms-2 btn-close btn-close-white"
                           style={{ fontSize: '0.5rem' }}
                           aria-label="Xóa"
-                        ></button>
+                         />
                       </span>
                     </div>
                     <div className="input-group">
@@ -477,14 +477,14 @@ const SettingsPage = () => {
                         placeholder="Ví dụ: 192.168.1.0/24"
                       />
                       <button className="btn btn-outline-secondary">
-                        <i className="fas fa-plus"></i> Thêm
+                        <i className="fas fa-plus" /> Thêm
                       </button>
                     </div>
                   </div>
                   
                   <div className="d-grid gap-2">
                     <button className="btn btn-primary d-flex align-items-center justify-content-center">
-                      <i className="fas fa-search me-2"></i> Bắt đầu quét
+                      <i className="fas fa-search me-2" /> Bắt đầu quét
                     </button>
                   </div>
                 </div>

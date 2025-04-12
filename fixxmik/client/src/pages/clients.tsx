@@ -692,7 +692,7 @@ const ClientsPage: React.FC = () => {
                     >
                       <div className="d-flex align-items-center mb-2">
                         <div className={`status-indicator me-2 ${device.isOnline ? 'bg-success' : 'bg-danger'}`} 
-                             style={{ width: '10px', height: '10px', borderRadius: '50%' }}></div>
+                             style={{ width: '10px', height: '10px', borderRadius: '50%' }} />
                         <h6 className="mb-0">{device.name}</h6>
                       </div>
                       <div className="small text-muted">{device.ipAddress}</div>

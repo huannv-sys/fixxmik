@@ -127,7 +127,7 @@ const InterfaceTable: React.FC<InterfaceTableProps> = ({ deviceId }) => {
   if (isLoading) {
     return (
       <div className="bg-gray-900 rounded-lg p-4 shadow-md flex items-center justify-center h-48">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
@@ -270,7 +270,7 @@ const InterfaceTable: React.FC<InterfaceTableProps> = ({ deviceId }) => {
         <h3 className="font-medium text-white text-lg">Network Interfaces</h3>
         <div className="flex items-center">
           <span className="text-xs text-slate-400">{displayInterfaces.length} interfaces</span>
-          <span className="inline-flex h-2 w-2 rounded-full bg-green-500 ml-2"></span>
+          <span className="inline-flex h-2 w-2 rounded-full bg-green-500 ml-2" />
         </div>
       </div>
 

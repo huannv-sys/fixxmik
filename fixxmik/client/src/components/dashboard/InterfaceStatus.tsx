@@ -144,7 +144,7 @@ const DetailedInterfaceCard = ({ iface }: { iface: Interface }) => {
       {/* Interface header with name and status */}
       <div className="flex items-center justify-between mb-4 border-b border-slate-700 pb-2">
         <div className="flex items-center">
-          <div className={`w-3 h-3 rounded-full ${iface.isUp ? 'bg-green-500' : (iface.disabled ? 'bg-gray-500' : 'bg-red-500')} mr-2 animate-pulse`}></div>
+          <div className={`w-3 h-3 rounded-full ${iface.isUp ? 'bg-green-500' : (iface.disabled ? 'bg-gray-500' : 'bg-red-500')} mr-2 animate-pulse`} />
           <span className="font-bold text-sm text-white">
             {iface.name || 'Unknown Interface'} {iface.type && <span className="text-xs font-semibold text-slate-400">({iface.type})</span>}
           </span>
@@ -258,13 +258,13 @@ const DetailedInterfaceCard = ({ iface }: { iface: Interface }) => {
         <div className="bg-slate-800 rounded p-2">
           <div className="flex items-center gap-2 mb-2">
             <div className="flex items-center">
-              <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
+              <div className="w-2 h-2 bg-blue-500 rounded-full mr-1" />
               <span className="text-xs text-slate-300">
                 Tx: {iface.isUp ? formatBitsPerSecond(trafficStats.txRate) : '0 bps'}
               </span>
             </div>
             <div className="flex items-center">
-              <div className="w-2 h-2 bg-red-500 rounded-full mr-1"></div>
+              <div className="w-2 h-2 bg-red-500 rounded-full mr-1" />
               <span className="text-xs text-slate-300">
                 Rx: {iface.isUp ? formatBitsPerSecond(trafficStats.rxRate) : '0 bps'}
               </span>
@@ -290,13 +290,13 @@ const DetailedInterfaceCard = ({ iface }: { iface: Interface }) => {
                   <div 
                     className="w-full bg-blue-500 opacity-70 border-t border-blue-400" 
                     style={{ height: `${txHeight}%` }}
-                  ></div>
+                   />
                   
                   {/* Rx bar (red, rendered on top of Tx) */}
                   <div 
                     className="w-full bg-red-500 opacity-70 border-t border-red-400" 
                     style={{ height: `${rxHeight}%` }}
-                  ></div>
+                   />
                 </div>
               );
             })}
@@ -304,13 +304,13 @@ const DetailedInterfaceCard = ({ iface }: { iface: Interface }) => {
           
           <div className="flex items-center gap-2 mt-2">
             <div className="flex items-center">
-              <div className="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
+              <div className="w-2 h-2 bg-blue-500 rounded-full mr-1" />
               <span className="text-xs text-slate-300">
                 Packet: {iface.isUp ? `${trafficStats.txPacketRate.toFixed(0)} p/s` : '0 p/s'}
               </span>
             </div>
             <div className="flex items-center">
-              <div className="w-2 h-2 bg-red-500 rounded-full mr-1"></div>
+              <div className="w-2 h-2 bg-red-500 rounded-full mr-1" />
               <span className="text-xs text-slate-300">
                 Packet: {iface.isUp ? `${trafficStats.rxPacketRate.toFixed(0)} p/s` : '0 p/s'}
               </span>
@@ -330,13 +330,13 @@ const DetailedInterfaceCard = ({ iface }: { iface: Interface }) => {
                   <div 
                     className="w-full bg-blue-500 opacity-70" 
                     style={{ height: `${txPktHeight}%` }}
-                  ></div>
+                   />
                   
                   {/* Rx packet bar (red) */}
                   <div 
                     className="w-full bg-red-500 opacity-70" 
                     style={{ height: `${rxPktHeight}%` }}
-                  ></div>
+                   />
                 </div>
               );
             })}
@@ -353,7 +353,7 @@ const SimpleInterfaceCard = ({ iface }: { iface: Interface }) => {
     <div className={`mb-3 border rounded-md p-2 ${iface.isUp ? 'border-green-500 bg-gray-800' : (iface.disabled ? 'border-gray-500 bg-gray-800' : 'border-red-500 bg-gray-800')}`}>
       <div className="flex justify-between items-center">
         <div className="flex items-center">
-          <div className={`w-3 h-3 rounded-full ${iface.isUp ? 'bg-green-500' : (iface.disabled ? 'bg-gray-500' : 'bg-red-500')} mr-2 animate-pulse`}></div>
+          <div className={`w-3 h-3 rounded-full ${iface.isUp ? 'bg-green-500' : (iface.disabled ? 'bg-gray-500' : 'bg-red-500')} mr-2 animate-pulse`} />
           <span className="font-bold text-sm text-white">
             {iface.name || 'Unknown Interface'} {iface.type && <span className="text-xs font-semibold text-gray-300">({iface.type})</span>}
           </span>
@@ -478,7 +478,7 @@ const InterfaceStatus: React.FC<InterfaceStatusProps> = ({ deviceId }) => {
     <div className="bg-gray-800 rounded-lg shadow-md border border-gray-700">
       <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
         <div className="flex items-center">
-          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+          <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
           <h3 className="font-bold text-white">Trạng thái Interfaces</h3>
         </div>
         <div className="flex items-center gap-3">
@@ -540,7 +540,7 @@ const InterfaceStatus: React.FC<InterfaceStatusProps> = ({ deviceId }) => {
       <div className="p-4">
         {isLoading ? (
           <div className="flex items-center justify-center h-24">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500" />
           </div>
         ) : interfaces && interfaces.length > 0 ? (
           filteredInterfaces.length > 0 ? (
