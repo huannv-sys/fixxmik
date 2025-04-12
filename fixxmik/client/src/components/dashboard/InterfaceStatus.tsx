@@ -395,7 +395,7 @@ const InterfaceStatus: React.FC<InterfaceStatusProps> = ({ deviceId }) => {
   
   const { data: interfaces, isLoading } = useQuery<Interface[]>({ 
     queryKey: [`/api/devices/${deviceId ?? 0}/interfaces`, { includeHealth: true }],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     refetchInterval: 5000, // Refresh every 5 seconds
   });
   

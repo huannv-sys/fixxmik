@@ -13,7 +13,7 @@ interface WirelessStatusProps {
 export default function WirelessStatus({ deviceId }: WirelessStatusProps) {
   const { data: wirelessInterfaces, isLoading, error } = useQuery({
     queryKey: deviceId ? [`/api/devices/${deviceId}/wireless`] : [],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
 
   if (!deviceId) {

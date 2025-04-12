@@ -34,7 +34,7 @@ export function useFirewallRules(deviceId: number | null, filters: FirewallRules
   
   return useQuery<FirewallRuleResponse[]>({
     queryKey: ['/api/devices', deviceId, 'firewall-rules', filters],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     queryFn: async ({ queryKey }) => {
       const response = await fetch(`/api/devices/${deviceId}/firewall-rules${queryString}`);
       if (!response.ok) {
@@ -48,7 +48,7 @@ export function useFirewallRules(deviceId: number | null, filters: FirewallRules
 export function useFirewallRule(deviceId: number | null, ruleId: string | null) {
   return useQuery<FirewallRuleResponse>({
     queryKey: ['/api/devices', deviceId, 'firewall-rules', ruleId],
-    enabled: !!deviceId && !!ruleId,
+    enabled: Boolean(deviceId) && Boolean(ruleId),
     queryFn: async ({ queryKey }) => {
       const response = await fetch(`/api/devices/${deviceId}/firewall-rules/${ruleId}`);
       if (!response.ok) {

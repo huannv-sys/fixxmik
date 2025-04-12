@@ -67,7 +67,7 @@ export const AnimatedNetworkTrafficChart: React.FC<AnimatedNetworkTrafficChartPr
   // Query for initial traffic data
   const { data: metricsData, isLoading, refetch } = useQuery<any[]>({
     queryKey: [`/api/devices/${deviceId}/metrics`],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     refetchInterval: connected ? false : 5000, // Only poll if websocket is not connected
   });
   

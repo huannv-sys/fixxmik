@@ -24,7 +24,7 @@ const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({ deviceId }) =
   // Fetch metrics data
   const { data: metrics, isLoading } = useQuery<Metric[]>({ 
     queryKey: deviceId ? [`/api/devices/${deviceId}/metrics`] : null,
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
   
   const formatChartData = (metrics: Metric[] | undefined) => {

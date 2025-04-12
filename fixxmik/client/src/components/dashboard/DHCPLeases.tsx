@@ -38,7 +38,7 @@ const DHCPLeases: React.FC<DHCPLeasesProps> = ({ deviceId }) => {
   // Fetch DHCP Leases
   const { data: leases, isLoading, error, refetch } = useQuery<DHCPLease[]>({
     queryKey: [`/api/devices/${deviceId}/dhcp/leases`],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     refetchInterval: autoRefresh ? 10000 : false, // Refresh every 10 seconds if auto-refresh is enabled
   });
   

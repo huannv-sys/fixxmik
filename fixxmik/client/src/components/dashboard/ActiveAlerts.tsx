@@ -11,7 +11,7 @@ interface ActiveAlertsProps {
 const ActiveAlerts: React.FC<ActiveAlertsProps> = ({ deviceId }) => {
   const { data: alerts, isLoading } = useQuery<Alert[]>({ 
     queryKey: ['/api/alerts', { deviceId, acknowledged: false, limit: 5 }],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
   
   const formatAlertTime = (timestamp: string | Date) => {

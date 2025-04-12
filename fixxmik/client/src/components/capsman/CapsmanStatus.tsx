@@ -19,13 +19,13 @@ export default function CapsmanStatus({ deviceId }: CapsmanStatusProps) {
 
   const { data: capsmanAPs, isLoading, error } = useQuery({
     queryKey: deviceId ? [`/api/devices/${deviceId}/capsman`] : [],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
 
   // Truy vấn thông tin thiết bị để kiểm tra xem có hỗ trợ CAPsMAN không
   const { data: device } = useQuery<any>({
     queryKey: deviceId ? [`/api/devices/${deviceId}`] : [],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
   
   // Hàm làm mới dữ liệu CAPsMan

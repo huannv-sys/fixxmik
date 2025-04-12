@@ -23,7 +23,7 @@ const NetworkPage = () => {
   
   const { data: interfaces, isLoading } = useQuery<Interface[]>({ 
     queryKey: selectedDeviceId ? [`/api/devices/${selectedDeviceId}/interfaces`] : ['empty-interfaces'],
-    enabled: !!selectedDeviceId,
+    enabled: Boolean(selectedDeviceId),
   });
 
   const formatBytes = (bytes: number) => {

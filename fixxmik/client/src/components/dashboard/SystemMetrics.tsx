@@ -22,7 +22,7 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ deviceId }) => {
   // Fetch device info - Sửa query key để hiển thị đúng
   const { data: device } = useQuery<Device>({ 
     queryKey: deviceId ? [`/api/devices/${deviceId}`] : ['empty'],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     refetchInterval: 1000, // Cập nhật mỗi giây để tạo hiệu ứng thời gian thực
   });
 
@@ -31,14 +31,14 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ deviceId }) => {
   
   const { data: metrics, isLoading } = useQuery<Metric[]>({ 
     queryKey: metricsEndpoint ? [metricsEndpoint] : ['empty'],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     refetchInterval: 1000, // Cập nhật mỗi giây để tạo hiệu ứng thời gian thực
   });
   
   // Fetch interfaces data to calculate errors
   const { data: interfaces } = useQuery<any[]>({
     queryKey: deviceId ? [`/api/devices/${deviceId}/interfaces`] : ['empty-interfaces'],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     refetchInterval: 1000, // Cập nhật mỗi giây để tạo hiệu ứng thời gian thực
   });
   

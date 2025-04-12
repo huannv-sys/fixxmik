@@ -30,7 +30,7 @@ export default function CapsmanPage() {
   // Lấy thông tin CAPsMAN APs của thiết bị đã chọn
   const { data: capsmanAPs, isLoading: isLoadingAPs } = useQuery({
     queryKey: selectedDeviceId ? [`/api/devices/${selectedDeviceId}/capsman`] : [],
-    enabled: !!selectedDeviceId,
+    enabled: Boolean(selectedDeviceId),
   });
 
   const handleDeviceChange = (deviceId: string) => {

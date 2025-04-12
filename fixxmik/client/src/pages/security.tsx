@@ -62,7 +62,7 @@ const SecurityPage = () => {
   // Fetch firewall rules data from API
   const { data: firewallRulesData } = useQuery<FirewallRule[]>({
     queryKey: ['/api/devices', selectedDeviceId, 'firewall'],
-    enabled: !!selectedDeviceId,
+    enabled: Boolean(selectedDeviceId),
   });
   
   const [firewallRules, setFirewallRules] = useState<FirewallRule[]>([]);
@@ -79,7 +79,7 @@ const SecurityPage = () => {
   // Fetch security threats data from API
   const { data: securityThreatsData } = useQuery<any[]>({
     queryKey: ['/api/devices', selectedDeviceId, 'security-threats'],
-    enabled: !!selectedDeviceId,
+    enabled: Boolean(selectedDeviceId),
   });
   
   const [securityThreats, setSecurityThreats] = useState<any[]>([]);
@@ -96,7 +96,7 @@ const SecurityPage = () => {
   // Fetch VPN users data from API
   const { data: vpnUsersData } = useQuery<any[]>({
     queryKey: ['/api/devices', selectedDeviceId, 'vpn-users'],
-    enabled: !!selectedDeviceId,
+    enabled: Boolean(selectedDeviceId),
   });
   
   const [vpnUsers, setVpnUsers] = useState<any[]>([]);

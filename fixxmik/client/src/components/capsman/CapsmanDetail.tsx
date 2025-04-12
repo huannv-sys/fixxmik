@@ -49,7 +49,7 @@ export default function CapsmanDetail({ deviceId, apId }: CapsmanDetailProps) {
       const res = await apiRequest('GET', `/api/capsman/${apId}`);
       return res.json();
     },
-    enabled: !!apId,
+    enabled: Boolean(apId),
   });
 
   if (isLoading) {
