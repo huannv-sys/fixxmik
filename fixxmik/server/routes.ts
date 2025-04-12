@@ -167,7 +167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get device logs
   router.get("/devices/:id/logs", async (req: Request, res: Response) => {
     console.log(`[LOGS API] Received logs request for device ${req.params.id}`);
-    console.log(`[LOGS API] Query parameters:`, req.query);
+    console.log("[LOGS API] Query parameters:", req.query);
     try {
       const deviceId = parseInt(req.params.id);
       
@@ -215,12 +215,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.query.dateFrom) options.dateFrom = req.query.dateFrom as string;
       if (req.query.dateTo) options.dateTo = req.query.dateTo as string;
       
-      console.log(`[LOGS API] Final options for getDeviceLogs:`, options);
+      console.log("[LOGS API] Final options for getDeviceLogs:", options);
       
       // Lấy logs từ MikroTik service
       const result = await mikrotikService.getDeviceLogs(deviceId, options);
       
-      console.log(`[LOGS API] getDeviceLogs result:`, { 
+      console.log("[LOGS API] getDeviceLogs result:", { 
         success: result.success, 
         message: result.message, 
         dataLength: result.data?.length || 0,
@@ -228,7 +228,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       if (!result.success) {
-        console.log(`[LOGS API] Failed to get logs:`, result.message);
+        console.log("[LOGS API] Failed to get logs:", result.message);
         return res.status(500).json(result);
       }
       
@@ -411,7 +411,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           capsmanAPs = await capsmanService.getCapsmanAPs(deviceId);
           console.log(`Đã thu thập và tìm thấy ${capsmanAPs.length} CAPsMan APs`);
         } catch (collectError) {
-          console.error(`Lỗi khi thu thập thông tin CAPsMAN:`, collectError);
+          console.error("Lỗi khi thu thập thông tin CAPsMAN:", collectError);
         }
       }
       
@@ -702,7 +702,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const discoveredCount = await mikrotikService.discoverDevices(subnet);
       return res.status(200).json({ 
-        message: `Network discovery completed`, 
+        message: "Network discovery completed", 
         discoveredCount 
       });
     } catch (error) {
@@ -1698,7 +1698,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             attackType: 'Brute Force',
             confidenceScore: '0.95',
             details: {
-              message: `Phát hiện nhiều kết nối thất bại đến SSH từ 203.113.131.45`,
+              message: "Phát hiện nhiều kết nối thất bại đến SSH từ 203.113.131.45",
               sourceIp: '203.113.131.45',
               destinationIp: deviceIp
             }
@@ -1718,7 +1718,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             attackType: 'Port Scan',
             confidenceScore: '0.92',
             details: {
-              message: `Phát hiện quét cổng từ 121.45.67.89 đến nhiều cổng dịch vụ`,
+              message: "Phát hiện quét cổng từ 121.45.67.89 đến nhiều cổng dịch vụ",
               sourceIp: '121.45.67.89',
               destinationIp: deviceIp
             }
@@ -1738,7 +1738,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             attackType: 'DoS Attack',
             confidenceScore: '0.88',
             details: {
-              message: `Phát hiện nhiều kết nối đồng thời từ 45.76.123.45 đến cổng HTTPS`,
+              message: "Phát hiện nhiều kết nối đồng thời từ 45.76.123.45 đến cổng HTTPS",
               sourceIp: '45.76.123.45',
               destinationIp: deviceIp
             }
@@ -1957,7 +1957,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
     } catch (err) {
-      console.error(`Lỗi trong phân tích:`, err);
+      console.error("Lỗi trong phân tích:", err);
       res.status(500).json({
         success: false,
         message: `Lỗi trong quá trình phân tích: ${err instanceof Error ? err.message : String(err)}`
@@ -2093,7 +2093,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
       } catch (err) {
-        console.error(`Lỗi khi lấy firewall rules:`, err);
+        console.error("Lỗi khi lấy firewall rules:", err);
         res.status(500).json({
           success: false,
           message: `Lỗi khi lấy firewall rules: ${err instanceof Error ? err.message : String(err)}`
@@ -2103,7 +2103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await mikrotikService.disconnectFromDevice(deviceId);
       }
     } catch (error) {
-      console.error(`Lỗi xử lý request:`, error);
+      console.error("Lỗi xử lý request:", error);
       res.status(500).json({
         success: false,
         message: `Lỗi xử lý request: ${error instanceof Error ? error.message : String(error)}`
@@ -2177,7 +2177,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: `Đã ${toggleCommand === 'enable' ? 'bật' : 'tắt'} rule firewall thành công`
         });
       } catch (err) {
-        console.error(`Lỗi khi toggle firewall rule:`, err);
+        console.error("Lỗi khi toggle firewall rule:", err);
         res.status(500).json({
           success: false,
           message: `Lỗi khi toggle firewall rule: ${err instanceof Error ? err.message : String(err)}`
@@ -2187,7 +2187,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await mikrotikService.disconnectFromDevice(deviceId);
       }
     } catch (error) {
-      console.error(`Lỗi xử lý request:`, error);
+      console.error("Lỗi xử lý request:", error);
       res.status(500).json({
         success: false,
         message: `Lỗi xử lý request: ${error instanceof Error ? error.message : String(error)}`
@@ -2261,7 +2261,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!updatedRule || updatedRule.length === 0) {
           return res.status(500).json({
             success: false,
-            message: `Không thể cập nhật trạng thái của rule`
+            message: "Không thể cập nhật trạng thái của rule"
           });
         }
         
@@ -2275,7 +2275,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
       } catch (err) {
-        console.error(`Lỗi khi thay đổi trạng thái firewall rule:`, err);
+        console.error("Lỗi khi thay đổi trạng thái firewall rule:", err);
         res.status(500).json({
           success: false,
           message: `Lỗi khi thay đổi trạng thái firewall rule: ${err instanceof Error ? err.message : String(err)}`
@@ -2285,7 +2285,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await mikrotikService.disconnectFromDevice(deviceId);
       }
     } catch (error) {
-      console.error(`Lỗi xử lý request:`, error);
+      console.error("Lỗi xử lý request:", error);
       res.status(500).json({
         success: false,
         message: `Lỗi xử lý request: ${error instanceof Error ? error.message : String(error)}`
@@ -2332,7 +2332,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       if (!result.success) {
-        console.error(`Lỗi khi lấy system logs:`, result.message);
+        console.error("Lỗi khi lấy system logs:", result.message);
         return res.status(500).json(result);
       }
       
@@ -2359,7 +2359,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: result.message
       });
     } catch (error) {
-      console.error(`Lỗi xử lý request:`, error);
+      console.error("Lỗi xử lý request:", error);
       res.status(500).json({
         success: false,
         message: `Lỗi xử lý request: ${error instanceof Error ? error.message : String(error)}`
@@ -2707,7 +2707,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Đảm bảo luôn có dữ liệu port theo yêu cầu UI
       if (!connectionStats.top10Ports || connectionStats.top10Ports.length === 0) {
-        logger.warn(`Không tìm thấy dữ liệu ports từ Mikrotik. Sử dụng dữ liệu mẫu cho API.`);
+        logger.warn("Không tìm thấy dữ liệu ports từ Mikrotik. Sử dụng dữ liệu mẫu cho API.");
         connectionStats.top10Ports = [
           { port: 80, protocol: 'tcp', connectionCount: 58, percentage: 30, serviceName: 'HTTP' },
           { port: 443, protocol: 'tcp', connectionCount: 45, percentage: 24, serviceName: 'HTTPS' },
