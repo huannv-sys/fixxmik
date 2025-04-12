@@ -98,9 +98,9 @@ export class CapsmanService {
       let capsmanConfig = [];
       try {
         capsmanConfig = await client.executeCommand('/caps-man/manager/print');
-        console.log(`CAPsMAN manager configuration:`, capsmanConfig);
+        console.log("CAPsMAN manager configuration:", capsmanConfig);
       } catch (configError) {
-        console.warn(`Could not get CAPsMAN manager configuration:`, configError);
+        console.warn("Could not get CAPsMAN manager configuration:", configError);
       }
       
       // Lấy thông tin các cấu hình không dây của CAPsMAN
@@ -109,7 +109,7 @@ export class CapsmanService {
         capsmanConfigs = await client.executeCommand('/caps-man/configuration/print');
         console.log(`Found ${capsmanConfigs.length} CAPsMAN configurations`);
       } catch (configsError) {
-        console.warn(`Could not get CAPsMAN configurations:`, configsError);
+        console.warn("Could not get CAPsMAN configurations:", configsError);
       }
       
       for (const ap of capsmanAPData) {
