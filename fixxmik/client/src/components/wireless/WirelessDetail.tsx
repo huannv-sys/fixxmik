@@ -1,17 +1,23 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Users, 
-  Signal, 
-  Radio, 
-  Wifi, 
-  WifiOff, 
-  Info, 
-  Settings 
+import {
+  Users,
+  Signal,
+  Radio,
+  Wifi,
+  WifiOff,
+  Info,
+  Settings,
 } from "lucide-react";
 
 interface WirelessDetailProps {
@@ -19,16 +25,27 @@ interface WirelessDetailProps {
   wirelessId?: number | null;
 }
 
-export default function WirelessDetail({ deviceId, wirelessId }: WirelessDetailProps) {
+export default function WirelessDetail({
+  deviceId,
+  wirelessId,
+}: WirelessDetailProps) {
   const [activeTab, setActiveTab] = useState("clients");
 
-  const { data: wirelessInterfaces, isLoading: isLoadingInterfaces, error: interfacesError } = useQuery({
+  const {
+    data: wirelessInterfaces,
+    isLoading: isLoadingInterfaces,
+    error: interfacesError,
+  } = useQuery({
     queryKey: deviceId ? [`/api/devices/${deviceId}/wireless`] : [],
     enabled: Boolean(deviceId),
   });
 
   // Lấy thông tin chi tiết về một wireless interface cụ thể nếu có wirelessId
-  const { data: wirelessDetail, isLoading: isLoadingDetail, error: detailError } = useQuery({
+  const {
+    data: wirelessDetail,
+    isLoading: isLoadingDetail,
+    error: detailError,
+  } = useQuery({
     queryKey: wirelessId ? [`/api/wireless/${wirelessId}`] : [],
     enabled: Boolean(wirelessId),
   });
@@ -38,7 +55,9 @@ export default function WirelessDetail({ deviceId, wirelessId }: WirelessDetailP
       <Card>
         <CardHeader>
           <CardTitle>Chi tiết Wireless</CardTitle>
-          <CardDescription>Vui lòng chọn thiết bị để xem chi tiết</CardDescription>
+          <CardDescription>
+            Vui lòng chọn thiết bị để xem chi tiết
+          </CardDescription>
         </CardHeader>
       </Card>
     );
@@ -80,12 +99,18 @@ export default function WirelessDetail({ deviceId, wirelessId }: WirelessDetailP
     );
   }
 
-  if (!wirelessInterfaces || !Array.isArray(wirelessInterfaces) || wirelessInterfaces.length === 0) {
+  if (
+    !wirelessInterfaces ||
+    !Array.isArray(wirelessInterfaces) ||
+    wirelessInterfaces.length === 0
+  ) {
     return (
       <Card>
         <CardHeader>
           <CardTitle>Chi tiết Wireless</CardTitle>
-          <CardDescription>Thiết bị không có wireless interface</CardDescription>
+          <CardDescription>
+            Thiết bị không có wireless interface
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center p-6 text-muted-foreground">
@@ -98,16 +123,22 @@ export default function WirelessDetail({ deviceId, wirelessId }: WirelessDetailP
   }
 
   // Sử dụng wireless interface đầu tiên nếu không có wirelessId
-  const selectedWireless = wirelessDetail || (wirelessId && Array.isArray(wirelessInterfaces) ? 
-    wirelessInterfaces.find((w: any) => w.id === wirelessId) : 
-    (Array.isArray(wirelessInterfaces) && wirelessInterfaces.length > 0 ? wirelessInterfaces[0] : null));
+  const selectedWireless =
+    wirelessDetail ||
+    (wirelessId && Array.isArray(wirelessInterfaces)
+      ? wirelessInterfaces.find((w: any) => w.id === wirelessId)
+      : Array.isArray(wirelessInterfaces) && wirelessInterfaces.length > 0
+        ? wirelessInterfaces[0]
+        : null);
 
   if (!selectedWireless) {
     return (
       <Card>
         <CardHeader>
           <CardTitle>Chi tiết Wireless</CardTitle>
-          <CardDescription>Không tìm thấy thông tin wireless interface</CardDescription>
+          <CardDescription>
+            Không tìm thấy thông tin wireless interface
+          </CardDescription>
         </CardHeader>
       </Card>
     );
@@ -118,22 +149,25 @@ export default function WirelessDetail({ deviceId, wirelessId }: WirelessDetailP
       <CardHeader className="pb-3">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>{selectedWireless.name} ({selectedWireless.ssid || 'N/A'})</CardTitle>
+            <CardTitle>
+              {selectedWireless.name} ({selectedWireless.ssid || "N/A"})
+            </CardTitle>
             <CardDescription>
-              {selectedWireless.isActive ? 
+              {selectedWireless.isActive ? (
                 <span className="flex items-center text-green-500">
                   <Wifi className="h-4 w-4 mr-1" /> Đang hoạt động
-                </span> : 
+                </span>
+              ) : (
                 <span className="flex items-center text-red-500">
                   <WifiOff className="h-4 w-4 mr-1" /> Ngừng hoạt động
                 </span>
-              }
+              )}
             </CardDescription>
           </div>
           <div className="text-right">
             <CardTitle>{formatBand(selectedWireless.band)}</CardTitle>
             <CardDescription>
-              Kênh: {selectedWireless.channel || 'N/A'}
+              Kênh: {selectedWireless.channel || "N/A"}
             </CardDescription>
           </div>
         </div>
@@ -154,7 +188,7 @@ export default function WirelessDetail({ deviceId, wirelessId }: WirelessDetailP
               <Settings className="h-4 w-4 mr-2" /> Cấu hình
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="clients" className="pt-4">
             <div className="space-y-4">
               <div className="flex justify-between items-center bg-muted p-4 rounded-lg">
@@ -162,65 +196,77 @@ export default function WirelessDetail({ deviceId, wirelessId }: WirelessDetailP
                   <Users className="h-10 w-10 mr-3 text-primary" />
                   <div>
                     <h3 className="text-lg font-semibold">Clients kết nối</h3>
-                    <p className="text-sm text-muted-foreground">Số lượng thiết bị</p>
+                    <p className="text-sm text-muted-foreground">
+                      Số lượng thiết bị
+                    </p>
                   </div>
                 </div>
-                <div className="text-3xl font-bold">{selectedWireless.clients || 0}</div>
+                <div className="text-3xl font-bold">
+                  {selectedWireless.clients || 0}
+                </div>
               </div>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="signal" className="pt-4">
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-muted p-4 rounded-lg">
                   <h3 className="text-sm font-medium">Công suất phát (dBm)</h3>
-                  <p className="text-2xl font-semibold">{selectedWireless.txPower || 'N/A'}</p>
+                  <p className="text-2xl font-semibold">
+                    {selectedWireless.txPower || "N/A"}
+                  </p>
                 </div>
                 <div className="bg-muted p-4 rounded-lg">
                   <h3 className="text-sm font-medium">Noise Floor (dBm)</h3>
-                  <p className="text-2xl font-semibold">{selectedWireless.noiseFloor || 'N/A'}</p>
+                  <p className="text-2xl font-semibold">
+                    {selectedWireless.noiseFloor || "N/A"}
+                  </p>
                 </div>
                 <div className="bg-muted p-4 rounded-lg col-span-2">
-                  <h3 className="text-sm font-medium">Tần số hoạt động (MHz)</h3>
-                  <p className="text-2xl font-semibold">{selectedWireless.frequency || 'N/A'}</p>
+                  <h3 className="text-sm font-medium">
+                    Tần số hoạt động (MHz)
+                  </h3>
+                  <p className="text-2xl font-semibold">
+                    {selectedWireless.frequency || "N/A"}
+                  </p>
                 </div>
               </div>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="info" className="pt-4">
             <div className="space-y-2">
               <div className="grid grid-cols-2 gap-y-2">
                 <div className="text-sm font-medium">Chế độ:</div>
                 <div>{formatMode(selectedWireless.mode)}</div>
-                
+
                 <div className="text-sm font-medium">MAC Address:</div>
-                <div>{selectedWireless.macAddress || 'N/A'}</div>
-                
+                <div>{selectedWireless.macAddress || "N/A"}</div>
+
                 <div className="text-sm font-medium">Băng tần:</div>
                 <div>{formatBand(selectedWireless.band)}</div>
-                
+
                 <div className="text-sm font-medium">Kênh:</div>
-                <div>{selectedWireless.channel || 'N/A'}</div>
-                
+                <div>{selectedWireless.channel || "N/A"}</div>
+
                 <div className="text-sm font-medium">Cập nhật cuối:</div>
                 <div>{formatDate(selectedWireless.lastUpdated)}</div>
               </div>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="config" className="pt-4">
             <div className="bg-muted p-4 rounded-lg">
               <h3 className="text-lg font-semibold mb-2">Cấu hình mạng</h3>
               <div className="space-y-2">
                 <div className="grid grid-cols-2 gap-y-2">
                   <div className="text-sm font-medium">SSID:</div>
-                  <div>{selectedWireless.ssid || 'N/A'}</div>
-                  
+                  <div>{selectedWireless.ssid || "N/A"}</div>
+
                   <div className="text-sm font-medium">Mode:</div>
                   <div>{formatMode(selectedWireless.mode)}</div>
-                  
+
                   <div className="text-sm font-medium">Băng tần:</div>
                   <div>{formatBand(selectedWireless.band)}</div>
                 </div>
@@ -234,45 +280,45 @@ export default function WirelessDetail({ deviceId, wirelessId }: WirelessDetailP
 }
 
 function formatBand(band: string | null) {
-  if (!band) return 'N/A';
-  
+  if (!band) return "N/A";
+
   switch (band) {
-    case '2ghz-b/g/n':
-      return '2.4 GHz (b/g/n)';
-    case '5ghz-a/n/ac':
-      return '5 GHz (a/n/ac)';
+    case "2ghz-b/g/n":
+      return "2.4 GHz (b/g/n)";
+    case "5ghz-a/n/ac":
+      return "5 GHz (a/n/ac)";
     default:
       return band;
   }
 }
 
 function formatMode(mode: string | null) {
-  if (!mode) return 'N/A';
-  
+  if (!mode) return "N/A";
+
   switch (mode) {
-    case 'ap-bridge':
-      return 'Access Point Bridge';
-    case 'station':
-      return 'Client';
-    case 'station-bridge':
-      return 'Client Bridge';
+    case "ap-bridge":
+      return "Access Point Bridge";
+    case "station":
+      return "Client";
+    case "station-bridge":
+      return "Client Bridge";
     default:
       return mode;
   }
 }
 
 function formatDate(dateString: string | null) {
-  if (!dateString) return 'N/A';
-  
+  if (!dateString) return "N/A";
+
   try {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('vi-VN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
+    return new Intl.DateTimeFormat("vi-VN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     }).format(date);
   } catch (error) {
     return dateString;

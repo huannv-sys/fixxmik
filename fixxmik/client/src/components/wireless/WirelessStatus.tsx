@@ -1,17 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Wifi, WifiOff } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface WirelessStatusProps {
   deviceId: number | null;
 }
 
 export default function WirelessStatus({ deviceId }: WirelessStatusProps) {
-  const { data: wirelessInterfaces, isLoading, error } = useQuery({
+  const {
+    data: wirelessInterfaces,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: deviceId ? [`/api/devices/${deviceId}/wireless`] : [],
     enabled: Boolean(deviceId),
   });
@@ -21,7 +38,9 @@ export default function WirelessStatus({ deviceId }: WirelessStatusProps) {
       <Card>
         <CardHeader>
           <CardTitle>Tình trạng Wireless</CardTitle>
-          <CardDescription>Vui lòng chọn thiết bị để xem thông tin Wireless</CardDescription>
+          <CardDescription>
+            Vui lòng chọn thiết bị để xem thông tin Wireless
+          </CardDescription>
         </CardHeader>
       </Card>
     );
@@ -63,12 +82,18 @@ export default function WirelessStatus({ deviceId }: WirelessStatusProps) {
     );
   }
 
-  if (!wirelessInterfaces || !Array.isArray(wirelessInterfaces) || wirelessInterfaces.length === 0) {
+  if (
+    !wirelessInterfaces ||
+    !Array.isArray(wirelessInterfaces) ||
+    wirelessInterfaces.length === 0
+  ) {
     return (
       <Card>
         <CardHeader>
           <CardTitle>Tình trạng Wireless</CardTitle>
-          <CardDescription>Thiết bị không có wireless interface</CardDescription>
+          <CardDescription>
+            Thiết bị không có wireless interface
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center p-6 text-muted-foreground">
@@ -98,24 +123,30 @@ export default function WirelessStatus({ deviceId }: WirelessStatusProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Array.isArray(wirelessInterfaces) && wirelessInterfaces.map((wInterface: any) => (
-              <TableRow key={wInterface.id}>
-                <TableCell className="font-medium">{wInterface.name}</TableCell>
-                <TableCell>{wInterface.ssid || 'Chưa có thông tin'}</TableCell>
-                <TableCell>{formatBand(wInterface.band)}</TableCell>
-                <TableCell>
-                  {wInterface.isActive ? 
-                    <Badge variant="success" className="bg-green-500">
-                      <Wifi className="h-3 w-3 mr-1" /> Hoạt động
-                    </Badge> : 
-                    <Badge variant="destructive">
-                      <WifiOff className="h-3 w-3 mr-1" /> Ngừng hoạt động
-                    </Badge>
-                  }
-                </TableCell>
-                <TableCell>{wInterface.clients || 0}</TableCell>
-              </TableRow>
-            ))}
+            {Array.isArray(wirelessInterfaces) &&
+              wirelessInterfaces.map((wInterface: any) => (
+                <TableRow key={wInterface.id}>
+                  <TableCell className="font-medium">
+                    {wInterface.name}
+                  </TableCell>
+                  <TableCell>
+                    {wInterface.ssid || "Chưa có thông tin"}
+                  </TableCell>
+                  <TableCell>{formatBand(wInterface.band)}</TableCell>
+                  <TableCell>
+                    {wInterface.isActive ? (
+                      <Badge variant="success" className="bg-green-500">
+                        <Wifi className="h-3 w-3 mr-1" /> Hoạt động
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive">
+                        <WifiOff className="h-3 w-3 mr-1" /> Ngừng hoạt động
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>{wInterface.clients || 0}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </CardContent>
@@ -124,13 +155,13 @@ export default function WirelessStatus({ deviceId }: WirelessStatusProps) {
 }
 
 function formatBand(band: string | null) {
-  if (!band) return 'Chưa có thông tin';
-  
+  if (!band) return "Chưa có thông tin";
+
   switch (band) {
-    case '2ghz-b/g/n':
-      return '2.4 GHz (b/g/n)';
-    case '5ghz-a/n/ac':
-      return '5 GHz (a/n/ac)';
+    case "2ghz-b/g/n":
+      return "2.4 GHz (b/g/n)";
+    case "5ghz-a/n/ac":
+      return "5 GHz (a/n/ac)";
     default:
       return band;
   }
