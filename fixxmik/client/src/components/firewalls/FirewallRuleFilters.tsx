@@ -1,7 +1,13 @@
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface FirewallRuleFiltersProps {
   onFilterChange: (filters: {
@@ -11,21 +17,23 @@ interface FirewallRuleFiltersProps {
   }) => void;
 }
 
-export default function FirewallRuleFilters({ onFilterChange }: FirewallRuleFiltersProps) {
-  const [enabledFilter, setEnabledFilter] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
+export default function FirewallRuleFilters({
+  onFilterChange,
+}: FirewallRuleFiltersProps) {
+  const [enabledFilter, setEnabledFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [perPage, setPerPage] = useState<number>(10);
-  
+
   const handleEnableFilterChange = (value: string) => {
     setEnabledFilter(value);
     onFilterChange({ enabledFilter: value, searchQuery, perPage });
   };
-  
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
     onFilterChange({ enabledFilter, searchQuery: e.target.value, perPage });
   };
-  
+
   const handlePerPageChange = (value: string) => {
     const newPerPage = parseInt(value);
     setPerPage(newPerPage);
@@ -36,23 +44,23 @@ export default function FirewallRuleFilters({ onFilterChange }: FirewallRuleFilt
     <div className="mb-4 flex items-center justify-between">
       <div className="flex space-x-2">
         <Button
-          variant={enabledFilter === 'all' ? 'default' : 'outline'}
+          variant={enabledFilter === "all" ? "default" : "outline"}
           size="sm"
-          onClick={() => handleEnableFilterChange('all')}
+          onClick={() => handleEnableFilterChange("all")}
         >
           All Rules
         </Button>
         <Button
-          variant={enabledFilter === 'enabled' ? 'default' : 'outline'}
+          variant={enabledFilter === "enabled" ? "default" : "outline"}
           size="sm"
-          onClick={() => handleEnableFilterChange('enabled')}
+          onClick={() => handleEnableFilterChange("enabled")}
         >
           Enabled
         </Button>
         <Button
-          variant={enabledFilter === 'disabled' ? 'default' : 'outline'}
+          variant={enabledFilter === "disabled" ? "default" : "outline"}
           size="sm"
-          onClick={() => handleEnableFilterChange('disabled')}
+          onClick={() => handleEnableFilterChange("disabled")}
         >
           Disabled
         </Button>
@@ -65,10 +73,7 @@ export default function FirewallRuleFilters({ onFilterChange }: FirewallRuleFilt
           value={searchQuery}
           onChange={handleSearchChange}
         />
-        <Select
-          value={perPage.toString()}
-          onValueChange={handlePerPageChange}
-        >
+        <Select value={perPage.toString()} onValueChange={handlePerPageChange}>
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Rules per page" />
           </SelectTrigger>

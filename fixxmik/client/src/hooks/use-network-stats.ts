@@ -57,7 +57,11 @@ export interface ConnectionStats {
 /**
  * Hook để lấy thông tin DHCP Stats từ API
  */
-export function useDHCPStats(deviceId: number | null, autoRefresh = false, refreshInterval = 30000) {
+export function useDHCPStats(
+  deviceId: number | null,
+  autoRefresh = false,
+  refreshInterval = 30000,
+) {
   const [dhcpStats, setDHCPStats] = useState<DHCPStats | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,20 +74,24 @@ export function useDHCPStats(deviceId: number | null, autoRefresh = false, refre
 
     try {
       const response = await axios.get(`/api/devices/${deviceId}/dhcp-stats`);
-      
+
       if (response.data.success) {
         // Chuyển đổi lastUpdated từ string sang Date
         const stats = {
           ...response.data.data,
-          lastUpdated: new Date(response.data.data.lastUpdated)
+          lastUpdated: new Date(response.data.data.lastUpdated),
         };
         setDHCPStats(stats);
       } else {
-        setError(response.data.message || 'Không thể lấy thông tin DHCP stats');
+        setError(response.data.message || "Không thể lấy thông tin DHCP stats");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Lỗi khi lấy dữ liệu DHCP stats');
-      console.error('Error fetching DHCP stats:', err);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Lỗi khi lấy dữ liệu DHCP stats",
+      );
+      console.error("Error fetching DHCP stats:", err);
     } finally {
       setLoading(false);
     }
@@ -108,8 +116,13 @@ export function useDHCPStats(deviceId: number | null, autoRefresh = false, refre
 /**
  * Hook để lấy thông tin Connection Stats từ API
  */
-export function useConnectionStats(deviceId: number | null, autoRefresh = false, refreshInterval = 30000) {
-  const [connectionStats, setConnectionStats] = useState<ConnectionStats | null>(null);
+export function useConnectionStats(
+  deviceId: number | null,
+  autoRefresh = false,
+  refreshInterval = 30000,
+) {
+  const [connectionStats, setConnectionStats] =
+    useState<ConnectionStats | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -120,21 +133,29 @@ export function useConnectionStats(deviceId: number | null, autoRefresh = false,
     setError(null);
 
     try {
-      const response = await axios.get(`/api/devices/${deviceId}/connection-stats`);
-      
+      const response = await axios.get(
+        `/api/devices/${deviceId}/connection-stats`,
+      );
+
       if (response.data.success) {
         // Chuyển đổi lastUpdated từ string sang Date
         const stats = {
           ...response.data.data,
-          lastUpdated: new Date(response.data.data.lastUpdated)
+          lastUpdated: new Date(response.data.data.lastUpdated),
         };
         setConnectionStats(stats);
       } else {
-        setError(response.data.message || 'Không thể lấy thông tin connection stats');
+        setError(
+          response.data.message || "Không thể lấy thông tin connection stats",
+        );
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Lỗi khi lấy dữ liệu connection stats');
-      console.error('Error fetching connection stats:', err);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Lỗi khi lấy dữ liệu connection stats",
+      );
+      console.error("Error fetching connection stats:", err);
     } finally {
       setLoading(false);
     }
@@ -171,15 +192,29 @@ export interface NetworkStats {
 /**
  * Hook để lấy thông tin Network Stats tổng hợp từ API
  */
-export function useNetworkStats(deviceId: number | null, autoRefresh = false, refreshInterval = 30000): NetworkStats {
+export function useNetworkStats(
+  deviceId: number | null,
+  autoRefresh = false,
+  refreshInterval = 30000,
+): NetworkStats {
   const [interfaces, setInterfaces] = useState<Interface[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Sử dụng các hook cơ bản
-  const { dhcpStats, loading: dhcpLoading, error: dhcpError, refetch: refreshDhcp } = useDHCPStats(deviceId, autoRefresh);
-  const { connectionStats, loading: connLoading, error: connError, refetch: refreshConn } = useConnectionStats(deviceId, autoRefresh);
-  
+  const {
+    dhcpStats,
+    loading: dhcpLoading,
+    error: dhcpError,
+    refetch: refreshDhcp,
+  } = useDHCPStats(deviceId, autoRefresh);
+  const {
+    connectionStats,
+    loading: connLoading,
+    error: connError,
+    refetch: refreshConn,
+  } = useConnectionStats(deviceId, autoRefresh);
+
   // Fetch interfaces
   const fetchInterfaces = useCallback(async () => {
     if (!deviceId) {
@@ -187,39 +222,39 @@ export function useNetworkStats(deviceId: number | null, autoRefresh = false, re
       setIsLoading(false);
       return;
     }
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await axios.get(`/api/devices/${deviceId}/interfaces`);
       if (response.data.success) {
         setInterfaces(response.data.data);
       } else {
-        setError(response.data.message || 'Không thể lấy thông tin interfaces');
+        setError(response.data.message || "Không thể lấy thông tin interfaces");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Lỗi khi lấy dữ liệu interfaces');
-      console.error('Error fetching interfaces:', err);
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Lỗi khi lấy dữ liệu interfaces",
+      );
+      console.error("Error fetching interfaces:", err);
     } finally {
       setIsLoading(false);
     }
   }, [deviceId]);
-  
+
   // Fetch tất cả dữ liệu
   const refreshAllStats = useCallback(async () => {
-    await Promise.all([
-      fetchInterfaces(),
-      refreshDhcp(),
-      refreshConn()
-    ]);
+    await Promise.all([fetchInterfaces(), refreshDhcp(), refreshConn()]);
   }, [fetchInterfaces, refreshDhcp, refreshConn]);
-  
+
   // Fetch dữ liệu ban đầu
   useEffect(() => {
     fetchInterfaces();
   }, [fetchInterfaces]);
-  
+
   // Auto refresh nếu được yêu cầu
   useEffect(() => {
     if (autoRefresh && deviceId) {
@@ -227,13 +262,13 @@ export function useNetworkStats(deviceId: number | null, autoRefresh = false, re
       return () => clearInterval(interval);
     }
   }, [autoRefresh, deviceId, fetchInterfaces, refreshInterval]);
-  
+
   return {
     interfaces,
     dhcpStats,
     connectionStats,
     isLoading: isLoading || dhcpLoading || connLoading,
     error: error || dhcpError || connError,
-    refreshStats: refreshAllStats
+    refreshStats: refreshAllStats,
   };
 }

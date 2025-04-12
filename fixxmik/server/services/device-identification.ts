@@ -1,28 +1,30 @@
-import { NetworkDeviceDetails } from '../mikrotik-api-types';
-import axios from 'axios';
-import * as fs from 'fs';
-import * as path from 'path';
+import { NetworkDeviceDetails } from "../mikrotik-api-types";
+import axios from "axios";
+import * as fs from "fs";
+import * as path from "path";
 
 // Cache thông tin nhà sản xuất MAC
-const MAC_VENDORS_CACHE_FILE = './attached_assets/mac_vendors_cache.json';
+const MAC_VENDORS_CACHE_FILE = "./attached_assets/mac_vendors_cache.json";
 const MAC_VENDORS_CACHE_EXPIRY = 30 * 24 * 60 * 60 * 1000; // 30 ngày
-let macVendorsCache: Record<string, { vendor: string, timestamp: number }> = {};
+let macVendorsCache: Record<string, { vendor: string; timestamp: number }> = {};
 
 // Load cache từ file khi module được khởi tạo
 try {
   if (fs.existsSync(MAC_VENDORS_CACHE_FILE)) {
-    const cacheData = fs.readFileSync(MAC_VENDORS_CACHE_FILE, 'utf8');
+    const cacheData = fs.readFileSync(MAC_VENDORS_CACHE_FILE, "utf8");
     macVendorsCache = JSON.parse(cacheData);
-    console.log(`Đã tải ${Object.keys(macVendorsCache).length} mục MAC vendor từ cache`);
+    console.log(
+      `Đã tải ${Object.keys(macVendorsCache).length} mục MAC vendor từ cache`,
+    );
   }
 } catch (error) {
-  console.error('Lỗi khi tải MAC vendor cache:', error);
+  console.error("Lỗi khi tải MAC vendor cache:", error);
   // Tạo file cache nếu chưa tồn tại
   try {
-    fs.writeFileSync(MAC_VENDORS_CACHE_FILE, JSON.stringify({}), 'utf8');
-    console.log('Đã tạo file MAC vendor cache mới');
+    fs.writeFileSync(MAC_VENDORS_CACHE_FILE, JSON.stringify({}), "utf8");
+    console.log("Đã tạo file MAC vendor cache mới");
   } catch (err) {
-    console.error('Không thể tạo file MAC vendor cache:', err);
+    console.error("Không thể tạo file MAC vendor cache:", err);
   }
 }
 
@@ -31,9 +33,13 @@ try {
  */
 function saveMacVendorsCache() {
   try {
-    fs.writeFileSync(MAC_VENDORS_CACHE_FILE, JSON.stringify(macVendorsCache), 'utf8');
+    fs.writeFileSync(
+      MAC_VENDORS_CACHE_FILE,
+      JSON.stringify(macVendorsCache),
+      "utf8",
+    );
   } catch (error) {
-    console.error('Lỗi khi lưu MAC vendor cache:', error);
+    console.error("Lỗi khi lưu MAC vendor cache:", error);
   }
 }
 
@@ -42,7 +48,7 @@ function saveMacVendorsCache() {
  */
 function normalizeMac(mac: string): string {
   // Chuyển đổi về dạng chữ hoa, loại bỏ các ký tự đặc biệt
-  return mac.toUpperCase().replace(/[^A-F0-9]/g, '');
+  return mac.toUpperCase().replace(/[^A-F0-9]/g, "");
 }
 
 /**
@@ -71,21 +77,21 @@ export async function getMacVendor(mac: string): Promise<string | null> {
   try {
     // Sử dụng API macvendors.com để tra cứu
     const response = await axios.get(`https://api.macvendors.com/${oui}`, {
-      timeout: 5000 // 5 giây timeout
+      timeout: 5000, // 5 giây timeout
     });
 
     if (response.status === 200 && response.data) {
       const vendor = response.data;
-      
+
       // Cập nhật cache
       macVendorsCache[oui] = {
         vendor: vendor,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      
+
       // Lưu cache
       saveMacVendorsCache();
-      
+
       return vendor;
     }
   } catch (error) {
@@ -93,8 +99,8 @@ export async function getMacVendor(mac: string): Promise<string | null> {
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       // Nhà sản xuất không tìm thấy, cập nhật cache với giá trị rỗng
       macVendorsCache[oui] = {
-        vendor: '',
-        timestamp: Date.now()
+        vendor: "",
+        timestamp: Date.now(),
       };
       saveMacVendorsCache();
     } else {
@@ -111,7 +117,9 @@ export async function getMacVendor(mac: string): Promise<string | null> {
 /**
  * Xác định thông tin thiết bị dựa trên các thông tin đã có
  */
-export async function identifyDevice(device: NetworkDeviceDetails): Promise<NetworkDeviceDetails | null> {
+export async function identifyDevice(
+  device: NetworkDeviceDetails,
+): Promise<NetworkDeviceDetails | null> {
   if (!device) return null;
 
   try {
@@ -129,14 +137,17 @@ export async function identifyDevice(device: NetworkDeviceDetails): Promise<Netw
     if (device.lastSeen) {
       const now = new Date();
       const lastSeenTime = new Date(device.lastSeen).getTime();
-      const thresholdTime = now.getTime() - (30 * 60 * 1000); // 30 phút
-      
+      const thresholdTime = now.getTime() - 30 * 60 * 1000; // 30 phút
+
       device.isOnline = lastSeenTime >= thresholdTime;
     }
 
     return device;
   } catch (error) {
-    console.error(`Lỗi khi xác định thông tin thiết bị ${device.ipAddress}:`, error);
+    console.error(
+      `Lỗi khi xác định thông tin thiết bị ${device.ipAddress}:`,
+      error,
+    );
     return device;
   }
 }

@@ -8,16 +8,16 @@ interface DeviceInfoProps {
 
 const DeviceInfo: React.FC<DeviceInfoProps> = ({ deviceId }) => {
   const [deviceData, setDeviceData] = useState<Device | null>(null);
-  
+
   // Sửa endpoint để khớp với API
   const deviceEndpoint = deviceId ? `/api/devices/${deviceId}` : null;
-  
-  const { data: device, isLoading } = useQuery<Device>({ 
-    queryKey: deviceEndpoint ? [deviceEndpoint] : ['empty-device'],
+
+  const { data: device, isLoading } = useQuery<Device>({
+    queryKey: deviceEndpoint ? [deviceEndpoint] : ["empty-device"],
     enabled: !!deviceId,
     refetchInterval: 5000, // Refresh device info every 5 seconds
   });
-  
+
   // Log dữ liệu thiết bị khi nhận được để debug
   useEffect(() => {
     if (device) {
@@ -25,14 +25,14 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ deviceId }) => {
       setDeviceData(device);
     }
   }, [device]);
-  
+
   const formatLastSeen = (date: string | Date | null | undefined) => {
-    if (!date) return 'Never';
-    
+    if (!date) return "Never";
+
     const lastSeen = new Date(date);
     return lastSeen.toLocaleString();
   };
-  
+
   return (
     <div className="bg-slate-900 rounded-lg shadow border border-slate-700 w-full">
       {isLoading ? (
@@ -43,11 +43,17 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ deviceId }) => {
         <div>
           {/* Status bar at the top */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700 bg-slate-800">
-            <h3 className="font-medium text-white text-lg">Device Information</h3>
+            <h3 className="font-medium text-white text-lg">
+              Device Information
+            </h3>
             <div className="flex items-center">
-              <span className={`inline-block w-3 h-3 rounded-full mr-2 ${deviceData.isOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
-              <span className={`font-medium ${deviceData.isOnline ? 'text-green-400' : 'text-red-400'}`}>
-                {deviceData.isOnline ? 'Online' : 'Offline'}
+              <span
+                className={`inline-block w-3 h-3 rounded-full mr-2 ${deviceData.isOnline ? "bg-green-500" : "bg-red-500"}`}
+              ></span>
+              <span
+                className={`font-medium ${deviceData.isOnline ? "text-green-400" : "text-red-400"}`}
+              >
+                {deviceData.isOnline ? "Online" : "Offline"}
               </span>
             </div>
           </div>
@@ -69,7 +75,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ deviceId }) => {
               </div>
             </div>
           </div>
-          
+
           {/* Main info table - vertical layout */}
           <div className="p-3">
             <div className="grid grid-cols-1 gap-2">
@@ -77,57 +83,57 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ deviceId }) => {
               <div className="bg-slate-800 rounded p-2">
                 <div className="text-sm text-slate-400 mb-1">Model</div>
                 <div className="text-sm font-medium text-white">
-                  {deviceData.model || 'Chưa có thông tin'}
+                  {deviceData.model || "Chưa có thông tin"}
                 </div>
               </div>
-              
+
               {/* Serial Number */}
               <div className="bg-slate-800 rounded p-2">
                 <div className="text-sm text-slate-400 mb-1">Serial Number</div>
                 <div className="text-sm font-medium text-white">
-                  {deviceData.serialNumber || 'Chưa có thông tin'}
+                  {deviceData.serialNumber || "Chưa có thông tin"}
                 </div>
               </div>
-              
+
               {/* RouterOS */}
               <div className="bg-slate-800 rounded p-2">
                 <div className="text-sm text-slate-400 mb-1">RouterOS</div>
                 <div className="text-sm font-medium text-white">
-                  {deviceData.routerOsVersion || 'Chưa có thông tin'}
+                  {deviceData.routerOsVersion || "Chưa có thông tin"}
                 </div>
               </div>
-              
+
               {/* Firmware */}
               <div className="bg-slate-800 rounded p-2">
                 <div className="text-sm text-slate-400 mb-1">Firmware</div>
                 <div className="text-sm font-medium text-white">
-                  {deviceData.firmware || 'Chưa có thông tin'}
+                  {deviceData.firmware || "Chưa có thông tin"}
                 </div>
               </div>
-              
+
               {/* CPU */}
               <div className="bg-slate-800 rounded p-2">
                 <div className="text-sm text-slate-400 mb-1">CPU</div>
                 <div className="text-sm font-medium text-white">
-                  {deviceData.cpu || 'Chưa có thông tin'}
+                  {deviceData.cpu || "Chưa có thông tin"}
                 </div>
               </div>
-              
+
               {/* Memory */}
               <div className="bg-slate-800 rounded p-2">
                 <div className="text-sm text-slate-400 mb-1">Memory</div>
                 <div className="text-sm font-medium text-white">
-                  {deviceData.totalMemory 
-                    ? `${Math.round(parseInt(deviceData.totalMemory as string) / (1024*1024))} MB` 
-                    : 'Chưa có thông tin'}
+                  {deviceData.totalMemory
+                    ? `${Math.round(parseInt(deviceData.totalMemory as string) / (1024 * 1024))} MB`
+                    : "Chưa có thông tin"}
                 </div>
               </div>
-              
+
               {/* Storage */}
               <div className="bg-slate-800 rounded p-2">
                 <div className="text-sm text-slate-400 mb-1">Storage</div>
                 <div className="text-sm font-medium text-white">
-                  {deviceData.storage || 'Chưa có thông tin'}
+                  {deviceData.storage || "Chưa có thông tin"}
                 </div>
               </div>
             </div>

@@ -6,26 +6,32 @@
  * Chuyển đổi bytes sang dạng đơn vị đọc được (KB, MB, GB, TB)
  */
 export function formatBytes(bytes: number, decimals = 2): string {
-  if (bytes === 0) return '0 B';
-  
+  if (bytes === 0) return "0 B";
+
   const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  const sizes = ["B", "KB", "MB", "GB", "TB", "PB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+
+  return (
+    parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + " " + sizes[i]
+  );
 }
 
 /**
  * Chuyển đổi bits per second (bps) sang đơn vị mạng đọc được
  */
 export function formatBitrate(bitsPerSecond: number, decimals = 2): string {
-  if (bitsPerSecond === 0) return '0 bps';
-  
+  if (bitsPerSecond === 0) return "0 bps";
+
   const k = 1000; // Sử dụng 1000 thay vì 1024 cho đơn vị mạng
-  const sizes = ['bps', 'Kbps', 'Mbps', 'Gbps', 'Tbps'];
+  const sizes = ["bps", "Kbps", "Mbps", "Gbps", "Tbps"];
   const i = Math.floor(Math.log(bitsPerSecond) / Math.log(k));
-  
-  return parseFloat((bitsPerSecond / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+
+  return (
+    parseFloat((bitsPerSecond / Math.pow(k, i)).toFixed(decimals)) +
+    " " +
+    sizes[i]
+  );
 }
 
 /**
@@ -33,13 +39,15 @@ export function formatBitrate(bitsPerSecond: number, decimals = 2): string {
  * Sử dụng luôn cho các giá trị tích lũy dạng bytes
  */
 export function formatAccumulatedBytes(bytes: number, decimals = 2): string {
-  if (bytes === 0) return '0 B';
-  
+  if (bytes === 0) return "0 B";
+
   const k = 1024; // Dùng 1024 cho đơn vị dữ liệu (bytes)
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  const sizes = ["B", "KB", "MB", "GB", "TB", "PB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+
+  return (
+    parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + " " + sizes[i]
+  );
 }
 
 /**
@@ -48,9 +56,9 @@ export function formatAccumulatedBytes(bytes: number, decimals = 2): string {
  */
 export function bytesToMbps(bytesPerSecond: number): number {
   if (bytesPerSecond <= 0) return 0;
-  
+
   // Chuyển đổi bytes/giây thành megabits/giây
-  // 1 Mbps = 1,048,576 bits/giây (1024*1024) 
+  // 1 Mbps = 1,048,576 bits/giây (1024*1024)
   // Đầu tiên chuyển đổi bytes sang bits (nhân 8), sau đó chia cho 1024*1024
   return (bytesPerSecond * 8) / (1024 * 1024);
 }
@@ -61,14 +69,15 @@ export function bytesToMbps(bytesPerSecond: number): number {
 export function formatBandwidth(bytesPerSecond: number, decimals = 2): string {
   // Đối với giá trị tích lũy lớn, sử dụng hàm bytesToMbps đã sửa
   const mbps = bytesToMbps(bytesPerSecond);
-  
+
   // Giới hạn giá trị tối đa hiển thị để tránh biểu đồ quá lớn không hợp lý
   // Đối với mạng gia đình, hiếm khi vượt quá 1 Gbps (1000 Mbps)
   const cappedMbps = Math.min(mbps, 1000);
-  
+
   // Nếu giá trị không hợp lý (quá cao), cắt giảm xuống mức tối đa
-  const reasonableMbps = isNaN(cappedMbps) || !isFinite(cappedMbps) ? 0 : cappedMbps;
-  
+  const reasonableMbps =
+    isNaN(cappedMbps) || !isFinite(cappedMbps) ? 0 : cappedMbps;
+
   if (reasonableMbps >= 100) {
     return `${(reasonableMbps / 1000).toFixed(decimals)} Gbps`;
   } else {

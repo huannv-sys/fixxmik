@@ -1,9 +1,19 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, real, pgEnum } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  boolean,
+  timestamp,
+  jsonb,
+  real,
+  pgEnum,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Phân quyền - xác định vai trò người dùng
-export const roleEnum = pgEnum('role', ['admin', 'operator', 'viewer']);
+export const roleEnum = pgEnum("role", ["admin", "operator", "viewer"]);
 
 // Users table - lưu thông tin người dùng
 export const users = pgTable("users", {
@@ -12,7 +22,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(), // lưu password hash
   email: text("email").unique(),
   fullName: text("full_name"),
-  role: roleEnum("role").notNull().default('viewer'),
+  role: roleEnum("role").notNull().default("viewer"),
   isActive: boolean("is_active").default(true),
   lastLogin: timestamp("last_login"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -100,15 +110,15 @@ export const metrics = pgTable("metrics", {
   id: serial("id").primaryKey(),
   deviceId: integer("device_id").notNull(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
-  cpuLoad: real("cpu_load"),            // Renamed from cpuUsage to match router API
-  memoryUsed: real("memory_used"),      // Renamed from memoryUsage to match router API
-  uptime: text("uptime"),               // Added to store device uptime as text
+  cpuLoad: real("cpu_load"), // Renamed from cpuUsage to match router API
+  memoryUsed: real("memory_used"), // Renamed from memoryUsage to match router API
+  uptime: text("uptime"), // Added to store device uptime as text
   temperature: real("temperature"),
   totalMemory: real("total_memory"),
   uploadBandwidth: real("upload_bandwidth"),
   downloadBandwidth: real("download_bandwidth"),
   boardTemp: real("board_temp"),
-  
+
   // Legacy fields for backward compatibility
   cpuUsage: real("cpu_usage"),
   memoryUsage: real("memory_usage"),
@@ -195,7 +205,9 @@ export const wirelessInterfaces = pgTable("wireless_interfaces", {
   lastUpdated: timestamp("last_updated").defaultNow(),
 });
 
-export const insertWirelessInterfaceSchema = createInsertSchema(wirelessInterfaces).omit({
+export const insertWirelessInterfaceSchema = createInsertSchema(
+  wirelessInterfaces,
+).omit({
   id: true,
   lastUpdated: true,
 });
@@ -241,13 +253,27 @@ export const capsmanClients = pgTable("capsman_clients", {
   lastActivity: timestamp("last_activity").defaultNow(),
 });
 
-export const insertCapsmanClientSchema = createInsertSchema(capsmanClients).omit({
+export const insertCapsmanClientSchema = createInsertSchema(
+  capsmanClients,
+).omit({
   id: true,
   lastActivity: true,
 });
 
 // Network Discovery - lưu thông tin về các thiết bị được phát hiện
-export const deviceRoleEnum = pgEnum('device_role', ['router', 'switch', 'access_point', 'storage', 'server', 'printer', 'camera', 'voice', 'endpoint', 'iot', 'unknown']);
+export const deviceRoleEnum = pgEnum("device_role", [
+  "router",
+  "switch",
+  "access_point",
+  "storage",
+  "server",
+  "printer",
+  "camera",
+  "voice",
+  "endpoint",
+  "iot",
+  "unknown",
+]);
 
 export const networkDevices = pgTable("network_devices", {
   id: serial("id").primaryKey(),
@@ -293,7 +319,9 @@ export const deviceDiscoveryLog = pgTable("device_discovery_log", {
   details: jsonb("details"), // Chi tiết về phát hiện
 });
 
-export const insertNetworkDeviceSchema = createInsertSchema(networkDevices).omit({
+export const insertNetworkDeviceSchema = createInsertSchema(
+  networkDevices,
+).omit({
   id: true,
   firstSeen: true,
   lastSeen: true,
@@ -305,7 +333,9 @@ export const insertMacVendorSchema = createInsertSchema(macVendors).omit({
   lastUpdated: true,
 });
 
-export const insertDeviceDiscoveryLogSchema = createInsertSchema(deviceDiscoveryLog).omit({
+export const insertDeviceDiscoveryLogSchema = createInsertSchema(
+  deviceDiscoveryLog,
+).omit({
   id: true,
   timestamp: true,
 });
@@ -320,12 +350,14 @@ export type InsertInterface = z.infer<typeof insertInterfaceSchema>;
 export type Alert = typeof alerts.$inferSelect;
 export type InsertAlert = z.infer<typeof insertAlertSchema>;
 export type WirelessInterface = typeof wirelessInterfaces.$inferSelect;
-export type InsertWirelessInterface = z.infer<typeof insertWirelessInterfaceSchema>;
+export type InsertWirelessInterface = z.infer<
+  typeof insertWirelessInterfaceSchema
+>;
 export type CapsmanAP = typeof capsmanAPs.$inferSelect;
 export type InsertCapsmanAP = z.infer<typeof insertCapsmanAPSchema>;
 export type CapsmanClient = typeof capsmanClients.$inferSelect;
 export type InsertCapsmanClient = z.infer<typeof insertCapsmanClientSchema>;
-export type AlertSeverity = typeof alertSeverity[keyof typeof alertSeverity];
+export type AlertSeverity = (typeof alertSeverity)[keyof typeof alertSeverity];
 
 // Network Discovery Types
 export type NetworkDevice = typeof networkDevices.$inferSelect;
@@ -333,7 +365,9 @@ export type InsertNetworkDevice = z.infer<typeof insertNetworkDeviceSchema>;
 export type MacVendor = typeof macVendors.$inferSelect;
 export type InsertMacVendor = z.infer<typeof insertMacVendorSchema>;
 export type DeviceDiscoveryLog = typeof deviceDiscoveryLog.$inferSelect;
-export type InsertDeviceDiscoveryLog = z.infer<typeof insertDeviceDiscoveryLogSchema>;
+export type InsertDeviceDiscoveryLog = z.infer<
+  typeof insertDeviceDiscoveryLogSchema
+>;
 
 // User related types
 export type User = typeof users.$inferSelect;
@@ -384,8 +418,13 @@ export const networkTrafficFeatures = pgTable("network_traffic_features", {
 // Lịch sử phát hiện từ IDS
 export const idsDetectionHistory = pgTable("ids_detection_history", {
   id: serial("id").primaryKey(),
-  trafficFeatureId: integer("traffic_feature_id").references(() => networkTrafficFeatures.id, { onDelete: 'cascade' }),
-  deviceId: integer("device_id").references(() => devices.id, { onDelete: 'cascade' }),
+  trafficFeatureId: integer("traffic_feature_id").references(
+    () => networkTrafficFeatures.id,
+    { onDelete: "cascade" },
+  ),
+  deviceId: integer("device_id").references(() => devices.id, {
+    onDelete: "cascade",
+  }),
   timestamp: timestamp("timestamp").defaultNow(),
   isAnomaly: boolean("is_anomaly").notNull(),
   probability: real("probability").notNull(),
@@ -394,24 +433,38 @@ export const idsDetectionHistory = pgTable("ids_detection_history", {
 });
 
 // Export IDS related schemas and types
-export const insertNetworkTrafficFeaturesSchema = createInsertSchema(networkTrafficFeatures).omit({
+export const insertNetworkTrafficFeaturesSchema = createInsertSchema(
+  networkTrafficFeatures,
+).omit({
   id: true,
   timestamp: true,
   analyzedAt: true,
 });
 
-export const insertIdsDetectionHistorySchema = createInsertSchema(idsDetectionHistory).omit({
+export const insertIdsDetectionHistorySchema = createInsertSchema(
+  idsDetectionHistory,
+).omit({
   id: true,
   timestamp: true,
 });
 
 export type NetworkTrafficFeature = typeof networkTrafficFeatures.$inferSelect;
-export type InsertNetworkTrafficFeature = z.infer<typeof insertNetworkTrafficFeaturesSchema>;
+export type InsertNetworkTrafficFeature = z.infer<
+  typeof insertNetworkTrafficFeaturesSchema
+>;
 export type IdsDetectionHistory = typeof idsDetectionHistory.$inferSelect;
-export type InsertIdsDetectionHistory = z.infer<typeof insertIdsDetectionHistorySchema>;
+export type InsertIdsDetectionHistory = z.infer<
+  typeof insertIdsDetectionHistorySchema
+>;
 
 // WebSocket Message Types
 export type WebSocketMessage = {
-  type: 'FIREWALL_RULE_UPDATE' | 'DEVICE_STATUS_UPDATE' | 'TRAFFIC_UPDATE' | 'CONNECTION_ESTABLISHED' | 'ERROR' | 'SECURITY_ALERT';
+  type:
+    | "FIREWALL_RULE_UPDATE"
+    | "DEVICE_STATUS_UPDATE"
+    | "TRAFFIC_UPDATE"
+    | "CONNECTION_ESTABLISHED"
+    | "ERROR"
+    | "SECURITY_ALERT";
   payload: any;
 };

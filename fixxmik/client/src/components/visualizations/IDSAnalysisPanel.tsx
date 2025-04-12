@@ -1,7 +1,21 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import axios from "axios";
@@ -40,32 +54,44 @@ export default function IDSAnalysisPanel({ deviceId }: IDSAnalysisProps) {
   const handleAnalyzeTraffic = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const response = await axios.post('/api/security/analyze-real-traffic', { deviceId });
-      
+      const response = await axios.post("/api/security/analyze-real-traffic", {
+        deviceId,
+      });
+
       if (response.data.success) {
         setResult(response.data.data);
         toast({
           title: "Phân tích thành công",
           description: response.data.message,
-          variant: "default"
+          variant: "default",
         });
       } else {
-        setError(response.data.message || "Có lỗi xảy ra khi phân tích lưu lượng");
+        setError(
+          response.data.message || "Có lỗi xảy ra khi phân tích lưu lượng",
+        );
         toast({
           title: "Phân tích thất bại",
-          description: response.data.message || "Có lỗi xảy ra khi phân tích lưu lượng",
-          variant: "destructive"
+          description:
+            response.data.message || "Có lỗi xảy ra khi phân tích lưu lượng",
+          variant: "destructive",
         });
       }
     } catch (err) {
       console.error("Error analyzing traffic:", err);
-      setError(err instanceof Error ? err.message : "Có lỗi xảy ra khi phân tích lưu lượng");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Có lỗi xảy ra khi phân tích lưu lượng",
+      );
       toast({
         title: "Lỗi",
-        description: err instanceof Error ? err.message : "Có lỗi xảy ra khi phân tích lưu lượng",
-        variant: "destructive"
+        description:
+          err instanceof Error
+            ? err.message
+            : "Có lỗi xảy ra khi phân tích lưu lượng",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -88,7 +114,8 @@ export default function IDSAnalysisPanel({ deviceId }: IDSAnalysisProps) {
       <CardHeader>
         <CardTitle>Phân tích lưu lượng thực</CardTitle>
         <CardDescription>
-          Phân tích lưu lượng mạng thực tế từ thiết bị và phát hiện hành vi đáng ngờ hoặc tấn công mạng.
+          Phân tích lưu lượng mạng thực tế từ thiết bị và phát hiện hành vi đáng
+          ngờ hoặc tấn công mạng.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -103,11 +130,15 @@ export default function IDSAnalysisPanel({ deviceId }: IDSAnalysisProps) {
           <div className="space-y-4">
             <div className="grid grid-cols-4 gap-4">
               <div className="bg-card rounded-md p-4 shadow">
-                <p className="text-sm text-muted-foreground mb-1">Tổng kết nối</p>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Tổng kết nối
+                </p>
                 <p className="text-2xl font-bold">{result.connectionCount}</p>
               </div>
               <div className="bg-card rounded-md p-4 shadow">
-                <p className="text-sm text-muted-foreground mb-1">Đã phân tích</p>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Đã phân tích
+                </p>
                 <p className="text-2xl font-bold">{result.analyzedCount}</p>
               </div>
               <div className="bg-card rounded-md p-4 shadow">
@@ -115,14 +146,20 @@ export default function IDSAnalysisPanel({ deviceId }: IDSAnalysisProps) {
                 <p className="text-2xl font-bold">{result.anomalyCount}</p>
               </div>
               <div className="bg-card rounded-md p-4 shadow">
-                <p className="text-sm text-muted-foreground mb-1">Tỷ lệ dị thường</p>
-                <p className="text-2xl font-bold">{result.anomalyPercentage.toFixed(2)}%</p>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Tỷ lệ dị thường
+                </p>
+                <p className="text-2xl font-bold">
+                  {result.anomalyPercentage.toFixed(2)}%
+                </p>
               </div>
             </div>
 
             {result.anomalies.length > 0 ? (
               <div>
-                <h3 className="text-lg font-medium mb-2">Danh sách dị thường</h3>
+                <h3 className="text-lg font-medium mb-2">
+                  Danh sách dị thường
+                </h3>
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -160,7 +197,8 @@ export default function IDSAnalysisPanel({ deviceId }: IDSAnalysisProps) {
               <Alert className="bg-green-50 text-green-800 border-green-200">
                 <AlertTitle>Không phát hiện bất thường</AlertTitle>
                 <AlertDescription>
-                  Không có hành vi đáng ngờ nào được phát hiện trong lưu lượng mạng hiện tại.
+                  Không có hành vi đáng ngờ nào được phát hiện trong lưu lượng
+                  mạng hiện tại.
                 </AlertDescription>
               </Alert>
             )}
@@ -168,8 +206,8 @@ export default function IDSAnalysisPanel({ deviceId }: IDSAnalysisProps) {
         )}
       </CardContent>
       <CardFooter>
-        <Button 
-          onClick={handleAnalyzeTraffic} 
+        <Button
+          onClick={handleAnalyzeTraffic}
           disabled={isLoading}
           className="w-full"
         >

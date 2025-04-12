@@ -46,11 +46,15 @@ export function connectWebSocket(): WebSocket {
     if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
       reconnectTimeout = setTimeout(() => {
         reconnectAttempts++;
-        console.log(`Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
+        console.log(
+          `Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`,
+        );
         connectWebSocket();
       }, RECONNECT_DELAY);
     } else {
-      console.error("Maximum reconnect attempts reached. WebSocket connection failed.");
+      console.error(
+        "Maximum reconnect attempts reached. WebSocket connection failed.",
+      );
     }
   };
 
@@ -67,39 +71,42 @@ function handleWebSocketMessage(message: WebSocketMessage) {
       // Invalidate firewall rules query for the specific device
       const deviceId = message.payload.deviceId;
       queryClient.invalidateQueries({
-        queryKey: ['/api/devices', deviceId, 'firewall-rules'],
+        queryKey: ["/api/devices", deviceId, "firewall-rules"],
       });
       break;
 
     case "DEVICE_STATUS_UPDATE":
       // Invalidate devices query
       queryClient.invalidateQueries({
-        queryKey: ['/api/devices'],
+        queryKey: ["/api/devices"],
       });
       break;
-      
+
     case "TRAFFIC_UPDATE":
       // Invalidate metrics query for the specific device
       queryClient.invalidateQueries({
-        queryKey: ['/api/devices', message.payload.deviceId, 'metrics'],
+        queryKey: ["/api/devices", message.payload.deviceId, "metrics"],
       });
       break;
-      
+
     case "SECURITY_ALERT":
       // Invalidate alerts query when new security alert detected
       queryClient.invalidateQueries({
-        queryKey: ['/api/alerts'],
+        queryKey: ["/api/alerts"],
       });
       queryClient.invalidateQueries({
-        queryKey: ['/api/security/anomalies'],
+        queryKey: ["/api/security/anomalies"],
       });
-      
+
       // También se podría mostrar una notificación al usuario
       console.warn("Security alert detected:", message.payload);
       break;
-      
+
     case "CONNECTION_ESTABLISHED":
-      console.log("WebSocket connection established at:", message.payload.timestamp);
+      console.log(
+        "WebSocket connection established at:",
+        message.payload.timestamp,
+      );
       break;
 
     case "ERROR":

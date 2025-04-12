@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import FirewallRulesView from '@/components/security/FirewallRulesView';
-import { Container, Row, Col, Card, Form } from 'react-bootstrap';
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import FirewallRulesView from "@/components/security/FirewallRulesView";
+import { Container, Row, Col, Card, Form } from "react-bootstrap";
 
 interface Device {
   id: number;
@@ -14,14 +14,14 @@ interface Device {
 
 const SecurityPage: React.FC = () => {
   const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
-  
+
   // Fetch devices
   const { data: devices, isLoading: devicesLoading } = useQuery<Device[]>({
-    queryKey: ['devices'],
+    queryKey: ["devices"],
     queryFn: async () => {
-      const response = await axios.get('/api/devices');
+      const response = await axios.get("/api/devices");
       return response.data || [];
-    }
+    },
   });
 
   // Set selected device to the first device if none is selected
@@ -47,7 +47,8 @@ const SecurityPage: React.FC = () => {
           <Card.Body>
             <Card.Title>Không tìm thấy thiết bị</Card.Title>
             <Card.Text>
-              Bạn cần thêm thiết bị Mikrotik vào hệ thống để sử dụng tính năng này.
+              Bạn cần thêm thiết bị Mikrotik vào hệ thống để sử dụng tính năng
+              này.
             </Card.Text>
           </Card.Body>
         </Card>
@@ -64,12 +65,12 @@ const SecurityPage: React.FC = () => {
               <h1 className="h3 mb-0">Security Monitoring</h1>
               <Form.Group className="d-flex align-items-center">
                 <Form.Label className="me-2 mb-0">Device:</Form.Label>
-                <Form.Select 
-                  value={selectedDeviceId || ''} 
-                  onChange={handleDeviceChange} 
-                  style={{ width: 'auto' }}
+                <Form.Select
+                  value={selectedDeviceId || ""}
+                  onChange={handleDeviceChange}
+                  style={{ width: "auto" }}
                 >
-                  {devices.map(device => (
+                  {devices.map((device) => (
                     <option key={device.id} value={device.id}>
                       {device.name} ({device.ipAddress})
                     </option>
@@ -80,10 +81,8 @@ const SecurityPage: React.FC = () => {
           </Card>
         </Col>
       </Row>
-      
-      {selectedDeviceId && (
-        <FirewallRulesView />
-      )}
+
+      {selectedDeviceId && <FirewallRulesView />}
     </Container>
   );
 };

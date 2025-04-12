@@ -12,7 +12,11 @@ export interface TrafficMetrics {
 /**
  * Hook để lấy dữ liệu metrics lưu lượng mạng
  */
-export function useTrafficMetrics(deviceId: number | null, autoRefresh = false, refreshInterval = 10000): TrafficMetrics {
+export function useTrafficMetrics(
+  deviceId: number | null,
+  autoRefresh = false,
+  refreshInterval = 10000,
+): TrafficMetrics {
   const [metrics, setMetrics] = useState<Metric[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +33,7 @@ export function useTrafficMetrics(deviceId: number | null, autoRefresh = false, 
 
     try {
       const response = await axios.get(`/api/devices/${deviceId}/metrics`);
-      
+
       if (response.data && Array.isArray(response.data)) {
         setMetrics(response.data);
       } else {
@@ -38,7 +42,11 @@ export function useTrafficMetrics(deviceId: number | null, autoRefresh = false, 
         console.error("Invalid metrics data format:", response.data);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Lỗi khi lấy dữ liệu metrics");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Lỗi khi lấy dữ liệu metrics",
+      );
       console.error("Error fetching metrics:", err);
     } finally {
       setIsLoading(false);

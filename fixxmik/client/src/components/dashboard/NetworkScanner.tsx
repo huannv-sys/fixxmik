@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Button, Card, Badge, Alert, Spinner } from '../ui/bootstrap';
-import { FaNetworkWired, FaSearch, FaPlus } from 'react-icons/fa';
+import React, { useState } from "react";
+import { Button, Card, Badge, Alert, Spinner } from "../ui/bootstrap";
+import { FaNetworkWired, FaSearch, FaPlus } from "react-icons/fa";
 
 interface NetworkScannerProps {
   onDeviceFound?: (device: MikrotikDevice) => void;
@@ -19,25 +19,25 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<MikrotikDevice[]>([]);
-  const [networks, setNetworks] = useState<string[]>(['192.168.1.0/24']);
-  const [newNetwork, setNewNetwork] = useState('');
+  const [networks, setNetworks] = useState<string[]>(["192.168.1.0/24"]);
+  const [newNetwork, setNewNetwork] = useState("");
   const [autoDetect, setAutoDetect] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleAddNetwork = () => {
     if (newNetwork && !networks.includes(newNetwork)) {
       setNetworks([...networks, newNetwork]);
-      setNewNetwork('');
+      setNewNetwork("");
     }
   };
 
   const handleRemoveNetwork = (network: string) => {
-    setNetworks(networks.filter(n => n !== network));
+    setNetworks(networks.filter((n) => n !== network));
   };
 
   const handleScan = async () => {
     if (!autoDetect && networks.length === 0) {
-      setError('Hãy thêm ít nhất một dải mạng hoặc chọn tự động phát hiện');
+      setError("Hãy thêm ít nhất một dải mạng hoặc chọn tự động phát hiện");
       return;
     }
 
@@ -47,10 +47,10 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
     setSuccessMessage(null);
 
     try {
-      const response = await fetch('/api/network-scan', {
-        method: 'POST',
+      const response = await fetch("/api/network-scan", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           networks: autoDetect ? undefined : networks,
@@ -62,7 +62,7 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Có lỗi xảy ra khi quét mạng');
+        throw new Error(data.message || "Có lỗi xảy ra khi quét mạng");
       }
 
       setResults(data.devices || []);
@@ -73,7 +73,7 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
         data.devices.forEach((device: MikrotikDevice) => onDeviceFound(device));
       }
     } catch (err: any) {
-      setError(err.message || 'Có lỗi xảy ra khi quét mạng');
+      setError(err.message || "Có lỗi xảy ra khi quét mạng");
     } finally {
       setLoading(false);
     }
@@ -85,10 +85,10 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
     setSuccessMessage(null);
 
     try {
-      const response = await fetch('/api/network-scan/ip', {
-        method: 'POST',
+      const response = await fetch("/api/network-scan/ip", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ ip }),
       });
@@ -96,7 +96,7 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Có lỗi xảy ra khi quét IP');
+        throw new Error(data.message || "Có lỗi xảy ra khi quét IP");
       }
 
       if (data.device) {
@@ -112,7 +112,7 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
         setSuccessMessage(`Không tìm thấy thiết bị MikroTik tại ${ip}`);
       }
     } catch (err: any) {
-      setError(err.message || 'Có lỗi xảy ra khi quét IP');
+      setError(err.message || "Có lỗi xảy ra khi quét IP");
     } finally {
       setLoading(false);
     }
@@ -132,7 +132,11 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
         )}
 
         {successMessage && (
-          <Alert variant="success" dismissible onClose={() => setSuccessMessage(null)}>
+          <Alert
+            variant="success"
+            dismissible
+            onClose={() => setSuccessMessage(null)}
+          >
             {successMessage}
           </Alert>
         )}
@@ -155,19 +159,21 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
 
         {!autoDetect && (
           <div className="mb-3">
-            <label className="form-label">Dải mạng cần quét (định dạng CIDR)</label>
+            <label className="form-label">
+              Dải mạng cần quét (định dạng CIDR)
+            </label>
             <div className="mb-2">
               {networks.map((network) => (
                 <Badge
                   key={network}
                   bg="info"
                   className="me-2 mb-2 p-2"
-                  style={{ fontSize: '0.9rem' }}
+                  style={{ fontSize: "0.9rem" }}
                 >
                   {network}
                   <button
                     className="ms-2 btn-close btn-close-white"
-                    style={{ fontSize: '0.5rem' }}
+                    style={{ fontSize: "0.5rem" }}
                     onClick={() => handleRemoveNetwork(network)}
                     disabled={loading}
                     aria-label="Xóa"
@@ -183,7 +189,7 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
                 value={newNetwork}
                 onChange={(e) => setNewNetwork(e.target.value)}
                 disabled={loading}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddNetwork()}
+                onKeyDown={(e) => e.key === "Enter" && handleAddNetwork()}
               />
               <Button
                 variant="outline-secondary"
@@ -205,7 +211,11 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
           >
             {loading ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
                 Đang quét...
               </>
             ) : (
@@ -233,7 +243,7 @@ const NetworkScanner: React.FC<NetworkScannerProps> = ({ onDeviceFound }) => {
                   {results.map((device, idx) => (
                     <tr key={`${device.ip}-${idx}`}>
                       <td>{device.ip}</td>
-                      <td>{device.hostname || 'N/A'}</td>
+                      <td>{device.hostname || "N/A"}</td>
                       <td>{device.description}</td>
                       <td>
                         <Button
