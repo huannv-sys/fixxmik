@@ -1,12 +1,25 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Wifi, WifiOff, Radio, RefreshCw } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
 
 interface CapsmanStatusProps {
@@ -17,49 +30,58 @@ export default function CapsmanStatus({ deviceId }: CapsmanStatusProps) {
   const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { data: capsmanAPs, isLoading, error } = useQuery({
+  const {
+    data: capsmanAPs,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: deviceId ? [`/api/devices/${deviceId}/capsman`] : [],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
 
   // Truy vấn thông tin thiết bị để kiểm tra xem có hỗ trợ CAPsMAN không
   const { data: device } = useQuery<any>({
     queryKey: deviceId ? [`/api/devices/${deviceId}`] : [],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
-  
+
   // Hàm làm mới dữ liệu CAPsMan
   const refreshCapsmanData = async () => {
     if (!deviceId) return;
-    
+
     setIsRefreshing(true);
     try {
       const response = await fetch(`/api/devices/${deviceId}/refresh-capsman`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-      
+
       if (!response.ok) {
-        throw new Error('Không thể làm mới dữ liệu CAPsMAN');
+        throw new Error("Không thể làm mới dữ liệu CAPsMAN");
       }
-      
+
       const data = await response.json();
-      
+
       // Hiển thị thông báo thành công
       toast({
         title: "Làm mới thành công",
         description: `Đã tìm thấy ${data.apsCount} thiết bị Access Point`,
       });
-      
+
       // Làm mới data trong react-query cache
-      queryClient.invalidateQueries({ queryKey: [`/api/devices/${deviceId}/capsman`] });
+      queryClient.invalidateQueries({
+        queryKey: [`/api/devices/${deviceId}/capsman`],
+      });
     } catch (error) {
-      console.error('Lỗi khi làm mới dữ liệu CAPsMAN:', error);
+      console.error("Lỗi khi làm mới dữ liệu CAPsMAN:", error);
       toast({
         title: "Lỗi",
-        description: error instanceof Error ? error.message : 'Không thể làm mới dữ liệu CAPsMAN',
+        description:
+          error instanceof Error
+            ? error.message
+            : "Không thể làm mới dữ liệu CAPsMAN",
       });
     } finally {
       setIsRefreshing(false);
@@ -71,7 +93,9 @@ export default function CapsmanStatus({ deviceId }: CapsmanStatusProps) {
       <Card>
         <CardHeader>
           <CardTitle>CAPsMAN Controller</CardTitle>
-          <CardDescription>Vui lòng chọn thiết bị để xem thông tin CAPsMAN</CardDescription>
+          <CardDescription>
+            Vui lòng chọn thiết bị để xem thông tin CAPsMAN
+          </CardDescription>
         </CardHeader>
       </Card>
     );
@@ -139,9 +163,9 @@ export default function CapsmanStatus({ deviceId }: CapsmanStatusProps) {
             <CardTitle>CAPsMAN Controller</CardTitle>
             <CardDescription>Không có Access Point kết nối</CardDescription>
           </div>
-          <Button 
-            size="sm" 
-            variant="outline" 
+          <Button
+            size="sm"
+            variant="outline"
             onClick={refreshCapsmanData}
             disabled={isRefreshing}
           >
@@ -173,11 +197,13 @@ export default function CapsmanStatus({ deviceId }: CapsmanStatusProps) {
       <CardHeader className="flex justify-between items-start">
         <div>
           <CardTitle>CAPsMAN Controller</CardTitle>
-          <CardDescription>Quản lý Access Points thông qua CAPsMAN</CardDescription>
+          <CardDescription>
+            Quản lý Access Points thông qua CAPsMAN
+          </CardDescription>
         </div>
-        <Button 
-          size="sm" 
-          variant="outline" 
+        <Button
+          size="sm"
+          variant="outline"
           onClick={refreshCapsmanData}
           disabled={isRefreshing}
         >
@@ -206,25 +232,29 @@ export default function CapsmanStatus({ deviceId }: CapsmanStatusProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Array.isArray(capsmanAPs) && capsmanAPs.map((ap: any) => (
-              <TableRow key={ap.id}>
-                <TableCell className="font-medium">{ap.identity || ap.name}</TableCell>
-                <TableCell>{ap.ipAddress || 'N/A'}</TableCell>
-                <TableCell>
-                  {ap.state === 'running' ? (
-                    <Badge className="bg-green-500">
-                      <Wifi className="h-3 w-3 mr-1" /> Hoạt động
-                    </Badge>
-                  ) : (
-                    <Badge className="bg-red-500">
-                      <WifiOff className="h-3 w-3 mr-1" /> {ap.state || 'Ngừng hoạt động'}
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell>{ap.clients || 0}</TableCell>
-                <TableCell>{ap.uptime || 'N/A'}</TableCell>
-              </TableRow>
-            ))}
+            {Array.isArray(capsmanAPs) &&
+              capsmanAPs.map((ap: any) => (
+                <TableRow key={ap.id}>
+                  <TableCell className="font-medium">
+                    {ap.identity || ap.name}
+                  </TableCell>
+                  <TableCell>{ap.ipAddress || "N/A"}</TableCell>
+                  <TableCell>
+                    {ap.state === "running" ? (
+                      <Badge className="bg-green-500">
+                        <Wifi className="h-3 w-3 mr-1" /> Hoạt động
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-red-500">
+                        <WifiOff className="h-3 w-3 mr-1" />{" "}
+                        {ap.state || "Ngừng hoạt động"}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>{ap.clients || 0}</TableCell>
+                  <TableCell>{ap.uptime || "N/A"}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </CardContent>

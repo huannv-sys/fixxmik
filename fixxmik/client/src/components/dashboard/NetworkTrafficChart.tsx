@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Metric } from "@shared/schema";
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
-  Legend
+  Legend,
 } from "recharts";
 
 interface NetworkTrafficChartProps {
@@ -18,26 +18,29 @@ interface NetworkTrafficChartProps {
 
 type TimeRange = "1H" | "24H" | "7D";
 
-const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({ deviceId }) => {
+const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({
+  deviceId,
+}) => {
   const [timeRange, setTimeRange] = useState<TimeRange>("1H");
-  
+
   // Fetch metrics data
-  const { data: metrics, isLoading } = useQuery<Metric[]>({ 
+  const { data: metrics, isLoading } = useQuery<Metric[]>({
     queryKey: deviceId ? [`/api/devices/${deviceId}/metrics`] : null,
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
-  
+
   const formatChartData = (metrics: Metric[] | undefined) => {
     if (!metrics) return [];
-    
+
     // Sort by timestamp ascending
     const sortedMetrics = [...metrics].sort(
-      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
     );
-    
+
     // Filter based on time range
     const now = new Date();
-    const filteredMetrics = sortedMetrics.filter(metric => {
+    const filteredMetrics = sortedMetrics.filter((metric) => {
       const metricTime = new Date(metric.timestamp);
       if (timeRange === "1H") {
         return now.getTime() - metricTime.getTime() <= 60 * 60 * 1000;
@@ -47,35 +50,35 @@ const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({ deviceId }) =
         return now.getTime() - metricTime.getTime() <= 7 * 24 * 60 * 60 * 1000;
       }
     });
-    
-    return filteredMetrics.map(metric => ({
+
+    return filteredMetrics.map((metric) => ({
       timestamp: new Date(metric.timestamp).toLocaleTimeString(),
       downloadBandwidth: metric.downloadBandwidth || 0,
       uploadBandwidth: metric.uploadBandwidth || 0,
     }));
   };
-  
+
   const chartData = formatChartData(metrics);
-  
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-medium text-neutral-dark">Network Traffic</h3>
         <div className="flex space-x-2">
-          <button 
-            className={`px-2 py-1 text-xs font-medium rounded ${timeRange === "1H" ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+          <button
+            className={`px-2 py-1 text-xs font-medium rounded ${timeRange === "1H" ? "bg-primary text-white" : "text-gray-600 hover:bg-gray-100"}`}
             onClick={() => setTimeRange("1H")}
           >
             1H
           </button>
-          <button 
-            className={`px-2 py-1 text-xs font-medium rounded ${timeRange === "24H" ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+          <button
+            className={`px-2 py-1 text-xs font-medium rounded ${timeRange === "24H" ? "bg-primary text-white" : "text-gray-600 hover:bg-gray-100"}`}
             onClick={() => setTimeRange("24H")}
           >
             24H
           </button>
-          <button 
-            className={`px-2 py-1 text-xs font-medium rounded ${timeRange === "7D" ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+          <button
+            className={`px-2 py-1 text-xs font-medium rounded ${timeRange === "7D" ? "bg-primary text-white" : "text-gray-600 hover:bg-gray-100"}`}
             onClick={() => setTimeRange("7D")}
           >
             7D
@@ -98,23 +101,23 @@ const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({ deviceId }) =
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="downloadBandwidth" 
-                name="Download (Mbps)" 
-                stroke="#0078d4" 
-                strokeWidth={2} 
-                dot={false} 
-                activeDot={{ r: 6 }} 
+              <Line
+                type="monotone"
+                dataKey="downloadBandwidth"
+                name="Download (Mbps)"
+                stroke="#0078d4"
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 6 }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="uploadBandwidth" 
-                name="Upload (Mbps)" 
-                stroke="#d83b01" 
-                strokeWidth={2} 
-                dot={false} 
-                activeDot={{ r: 6 }} 
+              <Line
+                type="monotone"
+                dataKey="uploadBandwidth"
+                name="Upload (Mbps)"
+                stroke="#d83b01"
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 6 }}
               />
             </LineChart>
           </ResponsiveContainer>
