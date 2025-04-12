@@ -331,7 +331,7 @@ export const AnimatedNetworkTrafficChart: React.FC<AnimatedNetworkTrafficChartPr
                     fill="url(#colorDownload)" 
                     name="Download"
                     activeDot={{ r: 6, strokeWidth: 0 }}
-                    isAnimationActive={true}
+                    isAnimationActive
                     animationDuration={500}
                     animationEasing="ease-in-out"
                   />
@@ -344,7 +344,7 @@ export const AnimatedNetworkTrafficChart: React.FC<AnimatedNetworkTrafficChartPr
                     fill="url(#colorUpload)" 
                     name="Upload"
                     activeDot={{ r: 6, strokeWidth: 0 }}
-                    isAnimationActive={true}
+                    isAnimationActive
                     animationDuration={500}
                     animationEasing="ease-in-out"
                   />
