@@ -119,7 +119,7 @@ const Dashboard = () => {
               <div className="max-h-60 overflow-y-auto">
                 {devicesLoading ? (
                   <div className="flex items-center justify-center p-4">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
                   </div>
                 ) : filteredDevices && filteredDevices.length > 0 ? (
                   <div className="py-1">
@@ -235,7 +235,7 @@ const Dashboard = () => {
               
               {devicesLoading ? (
                 <div className="flex items-center justify-center py-10">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
                 </div>
               ) : devices && devices.length > 0 ? (
                 <div className="overflow-x-auto">
@@ -276,14 +276,14 @@ const Dashboard = () => {
                           <td className="px-3 py-3 whitespace-nowrap">
                             <div className="text-sm text-white">
                               <div className="w-16 bg-gray-700 rounded-full h-1.5">
-                                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '0%' }}></div>
+                                <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '0%' }} />
                               </div>
                             </div>
                           </td>
                           <td className="px-3 py-3 whitespace-nowrap">
                             <div className="text-sm text-white">
                               <div className="w-16 bg-gray-700 rounded-full h-1.5">
-                                <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '0%' }}></div>
+                                <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '0%' }} />
                               </div>
                             </div>
                           </td>
@@ -339,7 +339,7 @@ const Dashboard = () => {
                   <div key={device.id} className="bg-gray-700 p-4 rounded-lg">
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="text-sm font-medium text-white">{device.name}</h3>
-                      <div className={`w-2 h-2 rounded-full ${device.isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                      <div className={`w-2 h-2 rounded-full ${device.isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center mb-1">
@@ -350,7 +350,7 @@ const Dashboard = () => {
                         <div 
                           className="bg-blue-500 h-1 rounded-full" 
                           style={{ width: '0%' }}
-                        ></div>
+                         />
                       </div>
                       
                       <div className="flex justify-between items-center mb-1">
@@ -361,7 +361,7 @@ const Dashboard = () => {
                         <div 
                           className="bg-green-500 h-1 rounded-full" 
                           style={{ width: '0%' }}
-                        ></div>
+                         />
                       </div>
                       
                       <div className="flex justify-between items-center mb-1">
@@ -372,7 +372,7 @@ const Dashboard = () => {
                         <div 
                           className="bg-yellow-500 h-1 rounded-full" 
                           style={{ width: '0%' }}
-                        ></div>
+                         />
                       </div>
                       
                       <div className="flex justify-between items-center pt-2">

@@ -85,7 +85,7 @@ const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({ deviceId }) =
       <div className="h-[200px]">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
           </div>
         ) : chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
@@ -126,11 +126,11 @@ const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({ deviceId }) =
       </div>
       <div className="flex items-center justify-center mt-3 text-sm text-gray-500">
         <div className="flex items-center mr-4">
-          <div className="w-3 h-3 rounded-full bg-primary mr-1"></div>
+          <div className="w-3 h-3 rounded-full bg-primary mr-1" />
           <span>Download</span>
         </div>
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-amber-500 mr-1"></div>
+          <div className="w-3 h-3 rounded-full bg-amber-500 mr-1" />
           <span>Upload</span>
         </div>
       </div>

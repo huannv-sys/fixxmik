@@ -556,7 +556,7 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
   if (isLoadingMetrics || isLoadingInterfaces) {
     return (
       <div className="bg-gray-900 rounded-lg p-4 shadow-md flex items-center justify-center h-[600px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
@@ -703,7 +703,7 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
         <div className="p-4">
           {isLoadingLogAnalysis ? (
             <div className="flex items-center justify-center h-[400px]">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
             </div>
           ) : logAnalysisError ? (
             <div className="bg-slate-950 rounded-lg p-4 shadow-md flex flex-col items-center justify-center h-[400px]">

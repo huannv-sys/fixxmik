@@ -242,7 +242,7 @@ const DHCPLeases: React.FC<DHCPLeasesProps> = ({ deviceId }) => {
         
         {isLoading ? (
           <div className="flex justify-center items-center h-40">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
           </div>
         ) : error ? (
           <div className="py-6 px-2 text-center text-red-400">

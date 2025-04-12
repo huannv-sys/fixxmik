@@ -37,7 +37,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ deviceId }) => {
     <div className="bg-slate-900 rounded-lg shadow border border-slate-700 w-full">
       {isLoading ? (
         <div className="flex items-center justify-center h-40">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
         </div>
       ) : deviceData ? (
         <div>
@@ -45,7 +45,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ deviceId }) => {
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700 bg-slate-800">
             <h3 className="font-medium text-white text-lg">Device Information</h3>
             <div className="flex items-center">
-              <span className={`inline-block w-3 h-3 rounded-full mr-2 ${deviceData.isOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
+              <span className={`inline-block w-3 h-3 rounded-full mr-2 ${deviceData.isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
               <span className={`font-medium ${deviceData.isOnline ? 'text-green-400' : 'text-red-400'}`}>
                 {deviceData.isOnline ? 'Online' : 'Offline'}
               </span>
