@@ -117,7 +117,7 @@ export async function scanForMikrotikDevices(options: NetworkScanOptions = {}): 
  * @param concurrent Số lượng quá trình đồng thời tối đa
  * @returns Danh sách các thiết bị MikroTik được tìm thấy
  */
-export async function scanNetworks(networks: string[], concurrent: number = 20): Promise<MikrotikDevice[]> {
+export async function scanNetworks(networks: string[], concurrent = 20): Promise<MikrotikDevice[]> {
   return scanForMikrotikDevices({
     networks,
     concurrent
@@ -130,7 +130,7 @@ export async function scanNetworks(networks: string[], concurrent: number = 20):
  * @param concurrent Số lượng quá trình đồng thời tối đa
  * @returns Danh sách các thiết bị MikroTik được tìm thấy
  */
-export async function autoDetectAndScan(concurrent: number = 20): Promise<MikrotikDevice[]> {
+export async function autoDetectAndScan(concurrent = 20): Promise<MikrotikDevice[]> {
   return scanForMikrotikDevices({
     autoDetect: true,
     concurrent

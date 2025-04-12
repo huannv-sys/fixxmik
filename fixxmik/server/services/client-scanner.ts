@@ -411,7 +411,7 @@ export async function saveNewDevices(devices: NetworkDeviceDetails[]): Promise<n
 /**
  * Lấy danh sách các thiết bị đã phát hiện
  */
-export async function getDiscoveredDevices(onlyNew: boolean = false): Promise<NetworkDeviceDetails[]> {
+export async function getDiscoveredDevices(onlyNew = false): Promise<NetworkDeviceDetails[]> {
   const result: NetworkDeviceDetails[] = [];
   
   for (const device of discoveredDevices.values()) {

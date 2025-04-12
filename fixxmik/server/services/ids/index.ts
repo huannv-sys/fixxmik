@@ -50,7 +50,7 @@ export interface TrafficData {
  * IDS service for detecting intrusions using rule-based system
  */
 export class IDSService {
-  private isInitialized: boolean = false;
+  private isInitialized = false;
 
   constructor() {
     this.initialize();

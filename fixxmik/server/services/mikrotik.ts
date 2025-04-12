@@ -57,12 +57,12 @@ interface ConnectionStore {
  * MikroTik Client Class - Quản lý kết nối tới thiết bị MikroTik
  */
 class MikrotikClient {
-  public connected: boolean = false;  // Đổi từ private thành public để có thể truy cập từ bên ngoài
+  public connected = false;  // Đổi từ private thành public để có thể truy cập từ bên ngoài
   private ipAddress: string;
   private username: string;
   private password: string;
   private connection: any = null;
-  private port: number = 8728; // Cổng API mặc định
+  private port = 8728; // Cổng API mặc định
 
   constructor(ipAddress: string, username: string, password: string) {
     this.ipAddress = ipAddress;

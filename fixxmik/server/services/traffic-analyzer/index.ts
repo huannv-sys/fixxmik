@@ -101,7 +101,7 @@ class TrafficAnalyzerService {
   createTopIpsByTrafficData(
     trafficData: TrafficData[],
     ipColumn: 'src_ip' | 'dst_ip',
-    topN: number = 10
+    topN = 10
   ): {ip: string, megabytes: number}[] {
     return visualizer.calculateTopIpsByTraffic(trafficData, ipColumn, topN);
   }
@@ -110,7 +110,7 @@ class TrafficAnalyzerService {
   createTopPortsData(
     trafficData: TrafficData[],
     metric: 'traffic' | 'connections' = 'connections',
-    topN: number = 10
+    topN = 10
   ): {port: number, value: number}[] {
     return visualizer.calculateTopPorts(trafficData, metric, topN);
   }

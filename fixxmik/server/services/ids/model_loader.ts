@@ -75,7 +75,7 @@ interface TrafficMemory {
 }
 
 class ModelLoader {
-  private modelReady: boolean = false;
+  private modelReady = false;
   private trafficMemory: TrafficMemory;
 
   constructor() {

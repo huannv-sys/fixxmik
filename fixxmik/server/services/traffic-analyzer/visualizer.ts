@@ -218,7 +218,7 @@ export function calculateHourlyTrafficHeatmap(data: TrafficData[]): {dayOfWeek: 
 export function calculateTopIpsByTraffic(
   data: TrafficData[],
   ipColumn: 'src_ip' | 'dst_ip',
-  topN: number = 10
+  topN = 10
 ): {ip: string, megabytes: number}[] {
   const ipTraffic = new Map<string, number>();
   
@@ -241,7 +241,7 @@ export function calculateTopIpsByTraffic(
 export function calculateTopPorts(
   data: TrafficData[],
   metric: 'traffic' | 'connections' = 'connections',
-  topN: number = 10
+  topN = 10
 ): {port: number, value: number}[] {
   const portMetrics = new Map<number, number>();
   

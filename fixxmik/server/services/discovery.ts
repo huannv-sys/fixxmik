@@ -11,7 +11,7 @@ const dnsLookup = util.promisify(dns.lookup);
 const dnsReverse = util.promisify(dns.reverse);
 
 // Kiểm tra xem một host có đang hoạt động không
-export async function checkHostReachable(ipAddress: string, timeout: number = 1000): Promise<boolean> {
+export async function checkHostReachable(ipAddress: string, timeout = 1000): Promise<boolean> {
   try {
     // Không sử dụng ping vì không có quyền trong môi trường Replit
     // Thử kết nối TCP đến các port phổ biến (80, 443, 22, 53)
@@ -57,7 +57,7 @@ export async function checkHostReachable(ipAddress: string, timeout: number = 10
 }
 
 // Quét các port phổ biến để xác định loại thiết bị
-export async function scanCommonPorts(ipAddress: string, timeout: number = 500): Promise<number[]> {
+export async function scanCommonPorts(ipAddress: string, timeout = 500): Promise<number[]> {
   const commonPorts = [
     20, 21, 22, 23, 25, 53, 80, 81, 88, 110, 111, 135, 139, 
     143, 389, 443, 445, 465, 500, 515, 554, 587, 631, 636, 
@@ -83,7 +83,7 @@ export async function scanCommonPorts(ipAddress: string, timeout: number = 500):
 }
 
 // Kiểm tra xem một port có mở không
-export async function checkPortOpen(ipAddress: string, port: number, timeout: number = 500): Promise<boolean> {
+export async function checkPortOpen(ipAddress: string, port: number, timeout = 500): Promise<boolean> {
   return new Promise((resolve) => {
     const socket = new net.Socket();
     
@@ -119,7 +119,7 @@ export async function getDeviceHostname(ipAddress: string): Promise<string | nul
 }
 
 // Quét một dải mạng để tìm thiết bị đang hoạt động
-export async function performNetworkScan(fullScan: boolean = false): Promise<NetworkDeviceDetails[]> {
+export async function performNetworkScan(fullScan = false): Promise<NetworkDeviceDetails[]> {
   // Thiết lập quét dải mạng nào
   let networks: string[] = [];
   
