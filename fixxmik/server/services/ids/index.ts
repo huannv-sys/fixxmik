@@ -30,7 +30,7 @@ import { networkTrafficFeatures, alerts, idsDetectionHistory } from '../../../sh
 import { eq, and, gte, lte, sql } from 'drizzle-orm';
 
 // Kiểm tra xem có thể sử dụng OpenAI không
-const useOpenAI = !!process.env.OPENAI_API_KEY;
+const useOpenAI = Boolean(process.env.OPENAI_API_KEY);
 
 // Interface for traffic data to analyze
 export interface TrafficData {

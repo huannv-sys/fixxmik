@@ -35,7 +35,7 @@ const CPUMemoryChart: React.FC<CPUMemoryChartProps> = ({ deviceId }) => {
   // Fetch initial metrics data
   const { data: metrics, isLoading } = useQuery<Metric[]>({ 
     queryKey: deviceId ? [`/api/devices/${deviceId}/metrics`] : ['/api/devices/metrics/none'],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
   
   // Hàm để thêm dữ liệu thời gian thực mới

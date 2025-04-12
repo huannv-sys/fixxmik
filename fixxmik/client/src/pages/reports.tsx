@@ -29,7 +29,7 @@ const PerformanceReportsPage = () => {
 
   const { data: metrics } = useQuery<Metric[]>({ 
     queryKey: selectedDeviceId ? [`/api/devices/${selectedDeviceId}/metrics`] : ['empty-metrics'],
-    enabled: !!selectedDeviceId,
+    enabled: Boolean(selectedDeviceId),
   });
 
   // Xử lý dữ liệu metrics từ API

@@ -14,7 +14,7 @@ const DeviceInfo: React.FC<DeviceInfoProps> = ({ deviceId }) => {
   
   const { data: device, isLoading } = useQuery<Device>({ 
     queryKey: deviceEndpoint ? [deviceEndpoint] : ['empty-device'],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     refetchInterval: 5000, // Refresh device info every 5 seconds
   });
   

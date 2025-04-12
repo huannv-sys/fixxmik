@@ -25,7 +25,7 @@ const DeviceInfoTest: React.FC<DeviceInfoTestProps> = ({ deviceId }) => {
   // Fetch device info with explicit URL
   const { data: device, isLoading, error } = useQuery<Device>({ 
     queryKey: [`/api/devices/${deviceId}`],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
 
   if (isLoading) return <div>Loading device information...</div>;

@@ -11,7 +11,7 @@ export function useDevices() {
 export function useDevice(deviceId: number) {
   return useQuery<DeviceResponse>({
     queryKey: ['/api/devices', deviceId],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
 }
 

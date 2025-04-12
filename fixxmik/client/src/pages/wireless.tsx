@@ -30,7 +30,7 @@ export default function WirelessPage() {
   // Lấy thông tin wireless interfaces của thiết bị đã chọn
   const { data: wirelessInterfaces, isLoading: isLoadingInterfaces } = useQuery({
     queryKey: selectedDeviceId ? [`/api/devices/${selectedDeviceId}/wireless`] : [],
-    enabled: !!selectedDeviceId,
+    enabled: Boolean(selectedDeviceId),
   });
 
   const handleDeviceChange = (deviceId: string) => {

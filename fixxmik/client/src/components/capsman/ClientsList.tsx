@@ -47,7 +47,7 @@ export default function ClientsList({ apId, apName }: ClientsListProps) {
       const res = await apiRequest('GET', `/api/capsman/${apId}/clients`);
       return res.json();
     },
-    enabled: !!apId,
+    enabled: Boolean(apId),
   });
 
   const getSignalIndicator = (signalStrength: number | null) => {

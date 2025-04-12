@@ -95,7 +95,7 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
     refetch: refetchMetrics 
   } = useQuery<Metric[]>({ 
     queryKey: [metricsEndpoint],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     refetchInterval: autoRefresh ? 1000 : false, // Auto refresh mỗi giây để tạo hiệu ứng cập nhật thời gian thực
     retry: 3, // Thử lại 3 lần nếu thất bại
     staleTime: 5000 // Dữ liệu cũ sau 5 giây
@@ -109,7 +109,7 @@ const NetworkTrafficAdvanced: React.FC<NetworkTrafficAdvancedProps> = ({ deviceI
     isLoading: isLoadingInterfaces 
   } = useQuery<Interface[]>({
     queryKey: [interfacesEndpoint],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     refetchInterval: autoRefresh ? 1000 : false // Cập nhật mỗi giây để tạo hiệu ứng thời gian thực
   });
   

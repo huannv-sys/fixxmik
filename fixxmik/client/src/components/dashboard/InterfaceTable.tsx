@@ -81,7 +81,7 @@ const InterfaceTable: React.FC<InterfaceTableProps> = ({ deviceId }) => {
         pppConnections: [] 
       };
     },
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
   

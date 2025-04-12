@@ -24,13 +24,13 @@ export default function WirelessDetail({ deviceId, wirelessId }: WirelessDetailP
 
   const { data: wirelessInterfaces, isLoading: isLoadingInterfaces, error: interfacesError } = useQuery({
     queryKey: deviceId ? [`/api/devices/${deviceId}/wireless`] : [],
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
 
   // Lấy thông tin chi tiết về một wireless interface cụ thể nếu có wirelessId
   const { data: wirelessDetail, isLoading: isLoadingDetail, error: detailError } = useQuery({
     queryKey: wirelessId ? [`/api/wireless/${wirelessId}`] : [],
-    enabled: !!wirelessId,
+    enabled: Boolean(wirelessId),
   });
 
   if (!deviceId) {

@@ -21,12 +21,12 @@ const formatBytes = (bytes: number | undefined, decimals = 2) => {
 const SummaryCards: React.FC<SummaryCardsProps> = ({ deviceId }) => {
   const { data: device } = useQuery<Device>({ 
     queryKey: deviceId ? [`/api/devices/${deviceId}`] : null,
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
   
   const { data: metrics } = useQuery<Metric[]>({ 
     queryKey: deviceId ? [`/api/devices/${deviceId}/metrics`, { limit: 1 }] : null,
-    enabled: !!deviceId,
+    enabled: Boolean(deviceId),
   });
   
   const latestMetric = metrics && metrics.length > 0 ? metrics[0] : null;
