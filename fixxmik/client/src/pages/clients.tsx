@@ -1,7 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Card, Alert, Badge, Button, Spinner } from '../components/ui/bootstrap';
-import { useWebSocketContext } from '../lib/websocket-context';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Card,
+  Alert,
+  Badge,
+  Button,
+  Spinner,
+} from "../components/ui/bootstrap";
+import { useWebSocketContext } from "../lib/websocket-context";
 
 // Interface cho thiết bị mạng (client)
 interface NetworkDevice {
@@ -68,7 +74,7 @@ interface RouterInterface {
 
 // Interface cho thông báo alert
 interface AlertMessage {
-  type: 'success' | 'danger' | 'warning' | 'info';
+  type: "success" | "danger" | "warning" | "info";
   message: string;
 }
 
@@ -78,33 +84,39 @@ const ClientsPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [scanning, setScanning] = useState<boolean>(false);
   const [refreshingAll, setRefreshingAll] = useState<boolean>(false);
-  const [subnet, setSubnet] = useState<string>('');
+  const [subnet, setSubnet] = useState<string>("");
   const [alert, setAlert] = useState<AlertMessage | null>(null);
-  const [selectedClient, setSelectedClient] = useState<NetworkDevice | null>(null);
-  const [deviceDetails, setDeviceDetails] = useState<NetworkDevice | null>(null);
+  const [selectedClient, setSelectedClient] = useState<NetworkDevice | null>(
+    null,
+  );
+  const [deviceDetails, setDeviceDetails] = useState<NetworkDevice | null>(
+    null,
+  );
   const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
-  
+
   // States cho quản lý router
   const [devices, setDevices] = useState<RouterDevice[]>([]);
-  const [selectedDevice, setSelectedDevice] = useState<RouterDevice | null>(null);
+  const [selectedDevice, setSelectedDevice] = useState<RouterDevice | null>(
+    null,
+  );
   const [deviceId, setDeviceId] = useState<number | null>(null);
   const [interfaceInfo, setInterfaceInfo] = useState<RouterInterface[]>([]);
-  
+
   // Sử dụng hook để lấy context
   const { subscribe, unsubscribe } = useWebSocketContext();
 
   // Fetch clients on component mount
   useEffect(() => {
     fetchDevices();
-    
+
     // Subscribe to WebSocket events for real-time updates
-    subscribe('network-devices-update', (data) => {
+    subscribe("network-devices-update", (data) => {
       if (data && Array.isArray(data)) {
-        setClients(prev => {
+        setClients((prev) => {
           // Update existing clients with new data
           const updated = [...prev];
-          data.forEach(newDevice => {
-            const index = updated.findIndex(d => d.id === newDevice.id);
+          data.forEach((newDevice) => {
+            const index = updated.findIndex((d) => d.id === newDevice.id);
             if (index >= 0) {
               updated[index] = { ...updated[index], ...newDevice };
             } else {
@@ -113,7 +125,7 @@ const ClientsPage: React.FC = () => {
           });
           return updated;
         });
-      } else if (data && typeof data === 'object') {
+      } else if (data && typeof data === "object") {
         // Single device update
         updateClientInList(data);
       }
@@ -121,10 +133,10 @@ const ClientsPage: React.FC = () => {
 
     // Cleanup function
     return () => {
-      unsubscribe('network-devices-update');
+      unsubscribe("network-devices-update");
     };
   }, []);
-  
+
   // Khi chọn thiết bị, tải dữ liệu client của thiết bị đó
   useEffect(() => {
     if (deviceId) {
@@ -137,10 +149,10 @@ const ClientsPage: React.FC = () => {
   const fetchDevices = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/devices');
+      const response = await axios.get("/api/devices");
       if (response.data && Array.isArray(response.data)) {
         setDevices(response.data);
-        
+
         // Nếu có thiết bị, tải thông tin client cho thiết bị đầu tiên
         if (response.data.length > 0) {
           setSelectedDevice(response.data[0]);
@@ -151,15 +163,15 @@ const ClientsPage: React.FC = () => {
       }
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching devices:', error);
+      console.error("Error fetching devices:", error);
       setAlert({
-        type: 'danger',
-        message: 'Failed to fetch devices. Please try again later.'
+        type: "danger",
+        message: "Failed to fetch devices. Please try again later.",
       });
       setLoading(false);
     }
   };
-  
+
   // Tải danh sách interface của thiết bị
   const fetchDeviceInterfaces = async (deviceId: number) => {
     try {
@@ -174,32 +186,34 @@ const ClientsPage: React.FC = () => {
       setInterfaceInfo([]);
     }
   };
-  
+
   // Tải danh sách client theo thiết bị
   const fetchClientsForDevice = async (deviceId: number) => {
     try {
       setLoading(true);
-      
+
       // Tải từ API /api/devices/:id/clients để lấy dữ liệu ARP table
       const response = await axios.get(`/api/devices/${deviceId}/clients`);
-      
+
       if (response.data && Array.isArray(response.data)) {
         console.log(`Nhận được ${response.data.length} thiết bị từ API`);
-        
+
         // Thêm ID nếu chưa có để đảm bảo không gặp lỗi khi hiển thị
-        const clientsWithId = response.data.map((client: any, index: number) => {
-          if (!client.id) {
-            return { ...client, id: `temp-${index}` };
-          }
-          return client;
-        });
-        
+        const clientsWithId = response.data.map(
+          (client: any, index: number) => {
+            if (!client.id) {
+              return { ...client, id: `temp-${index}` };
+            }
+            return client;
+          },
+        );
+
         setClients(clientsWithId);
       } else {
         // Tải từ API /api/clients nếu API trên không có dữ liệu
-        const fallbackResponse = await axios.get('/api/clients');
-        console.log('Sử dụng API dự phòng');
-        
+        const fallbackResponse = await axios.get("/api/clients");
+        console.log("Sử dụng API dự phòng");
+
         if (fallbackResponse.data && Array.isArray(fallbackResponse.data)) {
           setClients(fallbackResponse.data);
         } else if (fallbackResponse.data && fallbackResponse.data.devices) {
@@ -210,10 +224,10 @@ const ClientsPage: React.FC = () => {
       }
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching network clients:', error);
+      console.error("Error fetching network clients:", error);
       setAlert({
-        type: 'danger',
-        message: 'Failed to fetch network clients. Please try again later.'
+        type: "danger",
+        message: "Failed to fetch network clients. Please try again later.",
       });
       setLoading(false);
     }
@@ -223,47 +237,49 @@ const ClientsPage: React.FC = () => {
     try {
       if (!deviceId) {
         setAlert({
-          type: 'danger',
-          message: 'Please select a router first'
+          type: "danger",
+          message: "Please select a router first",
         });
         return;
       }
-      
+
       setScanning(true);
       setAlert(null);
       // Gửi yêu cầu quét dựa trên subnet hoặc tự động phát hiện
-      const response = await axios.post('/api/clients/scan', { 
+      const response = await axios.post("/api/clients/scan", {
         subnet: subnet || undefined,
         autoDetect: !subnet, // Tự động phát hiện nếu không có subnet
-        routerId: deviceId // Thêm routerId để API biết thiết bị nào cần quét
+        routerId: deviceId, // Thêm routerId để API biết thiết bị nào cần quét
       });
-      
+
       if (response.data && response.data.devices) {
-        setClients(prevClients => {
+        setClients((prevClients) => {
           // Đảm bảo prev là mảng
           const currentClients = Array.isArray(prevClients) ? prevClients : [];
-          
+
           // Merge new devices with existing ones
-          const existingIds = new Set(currentClients.map(d => d.id));
-          const newDevices = response.data.devices.filter((d: NetworkDevice) => !existingIds.has(d.id));
+          const existingIds = new Set(currentClients.map((d) => d.id));
+          const newDevices = response.data.devices.filter(
+            (d: NetworkDevice) => !existingIds.has(d.id),
+          );
           return [...currentClients, ...newDevices];
         });
         setAlert({
-          type: 'success',
-          message: `Network scan completed. Found ${response.data.devices.length} devices.`
+          type: "success",
+          message: `Network scan completed. Found ${response.data.devices.length} devices.`,
         });
       } else {
         setAlert({
-          type: 'info',
-          message: 'Network scan completed but no devices were found.'
+          type: "info",
+          message: "Network scan completed but no devices were found.",
         });
       }
       setScanning(false);
     } catch (error) {
-      console.error('Error scanning network:', error);
+      console.error("Error scanning network:", error);
       setAlert({
-        type: 'danger',
-        message: 'Failed to scan network. Please try again later.'
+        type: "danger",
+        message: "Failed to scan network. Please try again later.",
       });
       setScanning(false);
     }
@@ -272,18 +288,18 @@ const ClientsPage: React.FC = () => {
   const refreshAllClients = async () => {
     try {
       setRefreshingAll(true);
-      const response = await axios.post('/api/clients/refresh-all');
+      const response = await axios.post("/api/clients/refresh-all");
       setClients(response.data);
       setAlert({
-        type: 'success',
-        message: 'All clients refreshed successfully.'
+        type: "success",
+        message: "All clients refreshed successfully.",
       });
       setRefreshingAll(false);
     } catch (error) {
-      console.error('Error refreshing clients:', error);
+      console.error("Error refreshing clients:", error);
       setAlert({
-        type: 'danger',
-        message: 'Failed to refresh clients. Please try again later.'
+        type: "danger",
+        message: "Failed to refresh clients. Please try again later.",
       });
       setRefreshingAll(false);
     }
@@ -294,30 +310,30 @@ const ClientsPage: React.FC = () => {
       const response = await axios.post(`/api/clients/${clientId}/refresh`);
       updateClientInList(response.data);
       setAlert({
-        type: 'success',
-        message: 'Client refreshed successfully.'
+        type: "success",
+        message: "Client refreshed successfully.",
       });
-      
+
       // If we're viewing details of this client, update them too
       if (selectedClient && selectedClient.id === clientId) {
         setDeviceDetails(response.data);
       }
     } catch (error) {
-      console.error('Error refreshing client:', error);
+      console.error("Error refreshing client:", error);
       setAlert({
-        type: 'danger',
-        message: 'Failed to refresh client. Please try again later.'
+        type: "danger",
+        message: "Failed to refresh client. Please try again later.",
       });
     }
   };
 
   const updateClientInList = (updatedClient: NetworkDevice) => {
-    setClients(prevClients => {
+    setClients((prevClients) => {
       // Đảm bảo prev là mảng
       const currentClients = Array.isArray(prevClients) ? prevClients : [];
       const updated = [...currentClients];
-      
-      const index = updated.findIndex(c => c.id === updatedClient.id);
+
+      const index = updated.findIndex((c) => c.id === updatedClient.id);
       if (index >= 0) {
         updated[index] = { ...updated[index], ...updatedClient };
       } else {
@@ -331,24 +347,24 @@ const ClientsPage: React.FC = () => {
     try {
       setAlert(null);
       const response = await axios.post(`/api/clients/${clientId}/identify`);
-      
+
       const updatedClient = response.data.device || response.data;
       updateClientInList(updatedClient);
-      
+
       setAlert({
-        type: 'success',
-        message: 'Device identified successfully.'
+        type: "success",
+        message: "Device identified successfully.",
       });
-      
+
       // If we're viewing details of this client, update them too
       if (selectedClient && selectedClient.id === clientId) {
         setDeviceDetails(updatedClient);
       }
     } catch (error) {
-      console.error('Error identifying device:', error);
+      console.error("Error identifying device:", error);
       setAlert({
-        type: 'danger',
-        message: 'Failed to identify device. Please try again later.'
+        type: "danger",
+        message: "Failed to identify device. Please try again later.",
       });
     }
   };
@@ -357,24 +373,24 @@ const ClientsPage: React.FC = () => {
     try {
       setAlert(null);
       const response = await axios.post(`/api/clients/${clientId}/traffic`);
-      
+
       const updatedClient = response.data.device || response.data;
       updateClientInList(updatedClient);
-      
+
       setAlert({
-        type: 'success',
-        message: 'Traffic data collected successfully.'
+        type: "success",
+        message: "Traffic data collected successfully.",
       });
-      
+
       // If we're viewing details of this client, update them too
       if (selectedClient && selectedClient.id === clientId) {
         setDeviceDetails(updatedClient);
       }
     } catch (error) {
-      console.error('Error collecting traffic data:', error);
+      console.error("Error collecting traffic data:", error);
       setAlert({
-        type: 'danger',
-        message: 'Failed to collect traffic data. Please try again later.'
+        type: "danger",
+        message: "Failed to collect traffic data. Please try again later.",
       });
     }
   };
@@ -383,9 +399,10 @@ const ClientsPage: React.FC = () => {
     setSelectedClient(client);
     setDeviceDetails(null);
     setDetailsLoading(true);
-    
-    axios.get(`/api/clients/${client.id}`)
-      .then(response => {
+
+    axios
+      .get(`/api/clients/${client.id}`)
+      .then((response) => {
         if (response.data && response.data.device) {
           setDeviceDetails(response.data.device);
         } else {
@@ -393,11 +410,11 @@ const ClientsPage: React.FC = () => {
         }
         setDetailsLoading(false);
       })
-      .catch(error => {
-        console.error('Error fetching client details:', error);
+      .catch((error) => {
+        console.error("Error fetching client details:", error);
         setAlert({
-          type: 'danger',
-          message: 'Failed to fetch client details. Please try again later.'
+          type: "danger",
+          message: "Failed to fetch client details. Please try again later.",
         });
         setDetailsLoading(false);
       });
@@ -409,27 +426,27 @@ const ClientsPage: React.FC = () => {
   };
 
   const formatBytes = (bytes?: number, decimals = 2) => {
-    if (!bytes || bytes === 0) return '0 Bytes';
-    
+    if (!bytes || bytes === 0) return "0 Bytes";
+
     const k = 1024;
     const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
   };
 
   const formatBps = (bps?: number, decimals = 2) => {
-    if (!bps || bps === 0) return '0 bps';
-    
+    if (!bps || bps === 0) return "0 bps";
+
     const k = 1000;
     const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['bps', 'Kbps', 'Mbps', 'Gbps', 'Tbps'];
-    
+    const sizes = ["bps", "Kbps", "Mbps", "Gbps", "Tbps"];
+
     const i = Math.floor(Math.log(bps) / Math.log(k));
-    
-    return parseFloat((bps / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+
+    return parseFloat((bps / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
   };
 
   const getStatusBadge = (client: NetworkDevice) => {
@@ -441,36 +458,44 @@ const ClientsPage: React.FC = () => {
   };
 
   const getDeviceTypeBadge = (client: NetworkDevice) => {
-    const type = client.deviceType || 'Unknown';
-    let variant: "success" | "danger" | "warning" | "info" | "secondary" | "primary" | "dark" | "light" = 'secondary';
-    
+    const type = client.deviceType || "Unknown";
+    let variant:
+      | "success"
+      | "danger"
+      | "warning"
+      | "info"
+      | "secondary"
+      | "primary"
+      | "dark"
+      | "light" = "secondary";
+
     switch (type.toLowerCase()) {
-      case 'router':
-        variant = 'primary';
+      case "router":
+        variant = "primary";
         break;
-      case 'switch':
-        variant = 'info';
+      case "switch":
+        variant = "info";
         break;
-      case 'access point':
-      case 'accesspoint':
-      case 'wireless':
-        variant = 'success';
+      case "access point":
+      case "accesspoint":
+      case "wireless":
+        variant = "success";
         break;
-      case 'server':
-        variant = 'dark';
+      case "server":
+        variant = "dark";
         break;
-      case 'phone':
-      case 'mobile':
-        variant = 'warning';
+      case "phone":
+      case "mobile":
+        variant = "warning";
         break;
-      case 'camera':
-      case 'iot':
-        variant = 'danger';
+      case "camera":
+      case "iot":
+        variant = "danger";
         break;
       default:
-        variant = 'secondary';
+        variant = "secondary";
     }
-    
+
     return <Badge variant={variant}>{type}</Badge>;
   };
 
@@ -479,59 +504,83 @@ const ClientsPage: React.FC = () => {
       <Card className="mb-3">
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-2">
-            <h5 className="mb-0">
-              {client.hostName || client.ipAddress}
-            </h5>
+            <h5 className="mb-0">{client.hostName || client.ipAddress}</h5>
             <div>
-              {getStatusBadge(client)}
-              {' '}
-              {getDeviceTypeBadge(client)}
+              {getStatusBadge(client)} {getDeviceTypeBadge(client)}
             </div>
           </div>
-          
+
           <div className="mb-3">
-            <div><strong>IP:</strong> {client.ipAddress}</div>
-            <div><strong>MAC:</strong> {client.macAddress}</div>
-            {client.vendor && <div><strong>Vendor:</strong> {client.vendor}</div>}
-            {client.interface && <div><strong>Interface:</strong> {client.interface}</div>}
+            <div>
+              <strong>IP:</strong> {client.ipAddress}
+            </div>
+            <div>
+              <strong>MAC:</strong> {client.macAddress}
+            </div>
+            {client.vendor && (
+              <div>
+                <strong>Vendor:</strong> {client.vendor}
+              </div>
+            )}
+            {client.interface && (
+              <div>
+                <strong>Interface:</strong> {client.interface}
+              </div>
+            )}
           </div>
-          
+
           {(client.txBytes !== undefined || client.rxBytes !== undefined) && (
             <div className="mb-3">
-              {client.txBytes !== undefined && <div><strong>TX:</strong> {formatBytes(client.txBytes)}</div>}
-              {client.rxBytes !== undefined && <div><strong>RX:</strong> {formatBytes(client.rxBytes)}</div>}
-              {client.txRate !== undefined && <div><strong>TX Rate:</strong> {formatBps(client.txRate)}</div>}
-              {client.rxRate !== undefined && <div><strong>RX Rate:</strong> {formatBps(client.rxRate)}</div>}
+              {client.txBytes !== undefined && (
+                <div>
+                  <strong>TX:</strong> {formatBytes(client.txBytes)}
+                </div>
+              )}
+              {client.rxBytes !== undefined && (
+                <div>
+                  <strong>RX:</strong> {formatBytes(client.rxBytes)}
+                </div>
+              )}
+              {client.txRate !== undefined && (
+                <div>
+                  <strong>TX Rate:</strong> {formatBps(client.txRate)}
+                </div>
+              )}
+              {client.rxRate !== undefined && (
+                <div>
+                  <strong>RX Rate:</strong> {formatBps(client.rxRate)}
+                </div>
+              )}
             </div>
           )}
-          
+
           <div className="d-flex justify-content-between">
-            <Button 
-              variant="primary" 
-              size="sm" 
+            <Button
+              variant="primary"
+              size="sm"
               onClick={() => viewClientDetails(client)}
             >
               View Details
             </Button>
             <div>
-              <Button 
-                variant="outline-secondary" 
-                size="sm" 
+              <Button
+                variant="outline-secondary"
+                size="sm"
                 className="me-2"
                 onClick={() => refreshClient(client.id)}
               >
                 Refresh
               </Button>
-              <Button 
-                variant="outline-info" 
-                size="sm" 
+              <Button
+                variant="outline-info"
+                size="sm"
                 className="me-2"
                 onClick={() => identifyDevice(client.id)}
               >
                 Identify
               </Button>
-              <Button 
-                variant="outline-primary" 
+              <Button
+                variant="outline-primary"
                 size="sm"
                 onClick={() => collectTrafficData(client.id)}
               >
@@ -546,15 +595,21 @@ const ClientsPage: React.FC = () => {
 
   const renderClientDetails = () => {
     if (!selectedClient) return null;
-    
+
     return (
       <div className="client-details-panel">
         <Card>
           <Card.Header className="d-flex justify-content-between align-items-center">
             <h5 className="mb-0">Client Details</h5>
-            <Button variant="outline-secondary" size="sm" onClick={closeDetails}>Close</Button>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              onClick={closeDetails}
+            >
+              Close
+            </Button>
           </Card.Header>
-          
+
           <Card.Body>
             {detailsLoading ? (
               <div className="text-center p-4">
@@ -566,22 +621,33 @@ const ClientsPage: React.FC = () => {
                 <div className="mb-4">
                   <h4>{deviceDetails.hostName || deviceDetails.ipAddress}</h4>
                   <div className="mb-2">
-                    {getStatusBadge(deviceDetails)}
-                    {' '}
+                    {getStatusBadge(deviceDetails)}{" "}
                     {getDeviceTypeBadge(deviceDetails)}
                   </div>
                 </div>
-                
+
                 <div className="mb-4">
                   <h5>Network Information</h5>
                   <div className="mb-3">
-                    <div><strong>IP Address:</strong> {deviceDetails.ipAddress}</div>
-                    <div><strong>MAC Address:</strong> {deviceDetails.macAddress}</div>
-                    {deviceDetails.vendor && <div><strong>Vendor:</strong> {deviceDetails.vendor}</div>}
-                    {deviceDetails.interface && <div><strong>Interface:</strong> {deviceDetails.interface}</div>}
+                    <div>
+                      <strong>IP Address:</strong> {deviceDetails.ipAddress}
+                    </div>
+                    <div>
+                      <strong>MAC Address:</strong> {deviceDetails.macAddress}
+                    </div>
+                    {deviceDetails.vendor && (
+                      <div>
+                        <strong>Vendor:</strong> {deviceDetails.vendor}
+                      </div>
+                    )}
+                    {deviceDetails.interface && (
+                      <div>
+                        <strong>Interface:</strong> {deviceDetails.interface}
+                      </div>
+                    )}
                   </div>
                 </div>
-                
+
                 {deviceDetails.deviceData && (
                   <div className="mb-4">
                     <h5>Device Information</h5>
@@ -590,36 +656,60 @@ const ClientsPage: React.FC = () => {
                     </pre>
                   </div>
                 )}
-                
+
                 <div className="mb-4">
                   <h5>Traffic Statistics</h5>
-                  {deviceDetails.txBytes !== undefined && <div><strong>TX:</strong> {formatBytes(deviceDetails.txBytes)}</div>}
-                  {deviceDetails.rxBytes !== undefined && <div><strong>RX:</strong> {formatBytes(deviceDetails.rxBytes)}</div>}
-                  {deviceDetails.txRate !== undefined && <div><strong>TX Rate:</strong> {formatBps(deviceDetails.txRate)}</div>}
-                  {deviceDetails.rxRate !== undefined && <div><strong>RX Rate:</strong> {formatBps(deviceDetails.rxRate)}</div>}
+                  {deviceDetails.txBytes !== undefined && (
+                    <div>
+                      <strong>TX:</strong> {formatBytes(deviceDetails.txBytes)}
+                    </div>
+                  )}
+                  {deviceDetails.rxBytes !== undefined && (
+                    <div>
+                      <strong>RX:</strong> {formatBytes(deviceDetails.rxBytes)}
+                    </div>
+                  )}
+                  {deviceDetails.txRate !== undefined && (
+                    <div>
+                      <strong>TX Rate:</strong>{" "}
+                      {formatBps(deviceDetails.txRate)}
+                    </div>
+                  )}
+                  {deviceDetails.rxRate !== undefined && (
+                    <div>
+                      <strong>RX Rate:</strong>{" "}
+                      {formatBps(deviceDetails.rxRate)}
+                    </div>
+                  )}
                 </div>
-                
+
                 <div className="mb-4">
                   <h5>Timeline</h5>
-                  <div><strong>First Seen:</strong> {new Date(deviceDetails.firstSeen).toLocaleString()}</div>
-                  <div><strong>Last Seen:</strong> {new Date(deviceDetails.lastSeen).toLocaleString()}</div>
+                  <div>
+                    <strong>First Seen:</strong>{" "}
+                    {new Date(deviceDetails.firstSeen).toLocaleString()}
+                  </div>
+                  <div>
+                    <strong>Last Seen:</strong>{" "}
+                    {new Date(deviceDetails.lastSeen).toLocaleString()}
+                  </div>
                 </div>
-                
+
                 <div className="d-flex justify-content-between mt-4">
-                  <Button 
-                    variant="outline-primary" 
+                  <Button
+                    variant="outline-primary"
                     onClick={() => refreshClient(deviceDetails.id)}
                   >
                     Refresh
                   </Button>
-                  <Button 
-                    variant="outline-info" 
+                  <Button
+                    variant="outline-info"
                     onClick={() => identifyDevice(deviceDetails.id)}
                   >
                     Identify Device
                   </Button>
-                  <Button 
-                    variant="outline-primary" 
+                  <Button
+                    variant="outline-primary"
                     onClick={() => collectTrafficData(deviceDetails.id)}
                   >
                     Collect Traffic
@@ -640,41 +730,55 @@ const ClientsPage: React.FC = () => {
     setSelectedDevice(device);
     setDeviceId(device.id);
   };
-  
+
   return (
     <div className="container-fluid p-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>Thiết Bị Mạng</h1>
         <div>
-          <Button 
-            variant="outline-secondary" 
+          <Button
+            variant="outline-secondary"
             className="me-2"
-            onClick={() => deviceId ? fetchClientsForDevice(deviceId) : fetchDevices()}
+            onClick={() =>
+              deviceId ? fetchClientsForDevice(deviceId) : fetchDevices()
+            }
             disabled={loading}
           >
-            {loading ? <><Spinner animation="border" size="sm" /> Loading...</> : 'Refresh'}
+            {loading ? (
+              <>
+                <Spinner animation="border" size="sm" /> Loading...
+              </>
+            ) : (
+              "Refresh"
+            )}
           </Button>
-          <Button 
+          <Button
             variant="outline-primary"
             onClick={refreshAllClients}
             disabled={refreshingAll}
           >
-            {refreshingAll ? <><Spinner animation="border" size="sm" /> Updating...</> : 'Update All Status'}
+            {refreshingAll ? (
+              <>
+                <Spinner animation="border" size="sm" /> Updating...
+              </>
+            ) : (
+              "Update All Status"
+            )}
           </Button>
         </div>
       </div>
-      
+
       {alert && (
-        <Alert 
-          variant={alert.type} 
-          dismissible 
+        <Alert
+          variant={alert.type}
+          dismissible
           onClose={() => setAlert(null)}
           className="mb-4"
         >
           {alert.message}
         </Alert>
       )}
-      
+
       {/* Router Selection */}
       <div className="mb-4">
         <Card>
@@ -686,17 +790,25 @@ const ClientsPage: React.FC = () => {
                   {devices.map((device, index) => (
                     <div
                       key={device.id}
-                      className={`device-selector p-3 me-3 border rounded cursor-pointer ${selectedDevice && selectedDevice.id === device.id ? 'border-primary bg-light' : ''}`}
-                      style={{ minWidth: '220px', cursor: 'pointer' }}
+                      className={`device-selector p-3 me-3 border rounded cursor-pointer ${selectedDevice && selectedDevice.id === device.id ? "border-primary bg-light" : ""}`}
+                      style={{ minWidth: "220px", cursor: "pointer" }}
                       onClick={() => handleDeviceChange(device)}
                     >
                       <div className="d-flex align-items-center mb-2">
-                        <div className={`status-indicator me-2 ${device.isOnline ? 'bg-success' : 'bg-danger'}`} 
-                             style={{ width: '10px', height: '10px', borderRadius: '50%' }}></div>
+                        <div
+                          className={`status-indicator me-2 ${device.isOnline ? "bg-success" : "bg-danger"}`}
+                          style={{
+                            width: "10px",
+                            height: "10px",
+                            borderRadius: "50%",
+                          }}
+                        />
                         <h6 className="mb-0">{device.name}</h6>
                       </div>
                       <div className="small text-muted">{device.ipAddress}</div>
-                      <div className="small mt-1">{device.model || "Router"}</div>
+                      <div className="small mt-1">
+                        {device.model || "Router"}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -709,7 +821,7 @@ const ClientsPage: React.FC = () => {
           </Card.Body>
         </Card>
       </div>
-      
+
       {/* Network Scanner */}
       <div className="mb-4">
         <Card>
@@ -717,31 +829,33 @@ const ClientsPage: React.FC = () => {
             <Card.Title>Quét Mạng</Card.Title>
             <div className="row g-3 align-items-center">
               <div className="col-md-6">
-                <label htmlFor="subnet" className="form-label">Subnet (tùy chọn)</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  id="subnet" 
-                  placeholder="Ví dụ: 192.168.1.0/24" 
+                <label htmlFor="subnet" className="form-label">
+                  Subnet (tùy chọn)
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="subnet"
+                  placeholder="Ví dụ: 192.168.1.0/24"
                   value={subnet}
                   onChange={(e) => setSubnet(e.target.value)}
                 />
                 <div className="form-text">Để trống để quét mạng cục bộ</div>
               </div>
               <div className="col-md-6 d-flex align-items-end">
-                <Button 
-                  variant="primary" 
+                <Button
+                  variant="primary"
                   onClick={scanNetwork}
                   disabled={scanning}
                   className="w-100"
                 >
                   {scanning ? (
                     <>
-                      <Spinner animation="border" size="sm" /> 
+                      <Spinner animation="border" size="sm" />
                       Đang quét mạng...
                     </>
                   ) : (
-                    'Quét mạng'
+                    "Quét mạng"
                   )}
                 </Button>
               </div>
@@ -749,7 +863,7 @@ const ClientsPage: React.FC = () => {
           </Card.Body>
         </Card>
       </div>
-      
+
       {/* Interface Information */}
       {selectedDevice && (
         <div className="mb-4">
@@ -773,16 +887,30 @@ const ClientsPage: React.FC = () => {
                         <tr key={iface.id}>
                           <td>{iface.name}</td>
                           <td>{iface.type}</td>
-                          <td>{iface.macAddress || 'N/A'}</td>
+                          <td>{iface.macAddress || "N/A"}</td>
                           <td>
-                            <Badge variant={iface.running ? "success" : "danger"}>
+                            <Badge
+                              variant={iface.running ? "success" : "danger"}
+                            >
                               {iface.running ? "Up" : "Down"}
                             </Badge>
-                            {iface.disabled && <Badge variant="warning" className="ms-1">Disabled</Badge>}
+                            {iface.disabled && (
+                              <Badge variant="warning" className="ms-1">
+                                Disabled
+                              </Badge>
+                            )}
                           </td>
                           <td>
-                            {iface.txBytes !== undefined && <div className="small">TX: {formatBytes(iface.txBytes)}</div>}
-                            {iface.rxBytes !== undefined && <div className="small">RX: {formatBytes(iface.rxBytes)}</div>}
+                            {iface.txBytes !== undefined && (
+                              <div className="small">
+                                TX: {formatBytes(iface.txBytes)}
+                              </div>
+                            )}
+                            {iface.rxBytes !== undefined && (
+                              <div className="small">
+                                RX: {formatBytes(iface.rxBytes)}
+                              </div>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -790,13 +918,15 @@ const ClientsPage: React.FC = () => {
                   </table>
                 </div>
               ) : (
-                <p className="text-center p-3 bg-light rounded">Không có thông tin interface</p>
+                <p className="text-center p-3 bg-light rounded">
+                  Không có thông tin interface
+                </p>
               )}
             </Card.Body>
           </Card>
         </div>
       )}
-      
+
       <div className="row">
         <div className={selectedClient ? "col-md-8" : "col-md-12"}>
           {loading ? (
@@ -806,25 +936,25 @@ const ClientsPage: React.FC = () => {
             </div>
           ) : clients.length > 0 ? (
             <div>
-              <p className="text-muted mb-3">Showing {clients.length} network clients</p>
-              {clients.map(client => (
-                <div key={client.id}>
-                  {renderClientCard(client)}
-                </div>
+              <p className="text-muted mb-3">
+                Showing {clients.length} network clients
+              </p>
+              {clients.map((client) => (
+                <div key={client.id}>{renderClientCard(client)}</div>
               ))}
             </div>
           ) : (
             <div className="text-center p-5 bg-light rounded">
               <p className="mb-3">No network clients found.</p>
-              <Button variant="primary" onClick={scanNetwork}>Scan Network</Button>
+              <Button variant="primary" onClick={scanNetwork}>
+                Scan Network
+              </Button>
             </div>
           )}
         </div>
-        
+
         {selectedClient && (
-          <div className="col-md-4">
-            {renderClientDetails()}
-          </div>
+          <div className="col-md-4">{renderClientDetails()}</div>
         )}
       </div>
     </div>
