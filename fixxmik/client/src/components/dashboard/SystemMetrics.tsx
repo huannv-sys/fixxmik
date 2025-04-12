@@ -138,7 +138,7 @@ const SystemMetrics: React.FC<SystemMetricsProps> = ({ deviceId }) => {
   
   // Nếu có dữ liệu thực tế về disk, sử dụng nó
   // Lưu ý: Chúng ta phải kiểm tra trường storage trong deviceData thay vì trực tiếp
-  if (device && device.deviceData && typeof device.deviceData === 'object' && 'storage' in device.deviceData) {
+  if (device?.deviceData && typeof device.deviceData === 'object' && 'storage' in device.deviceData) {
     const storage = device.deviceData.storage as any;
     const totalSpace = Number(storage.total || 0);
     const usedSpace = Number(storage.used || 0);

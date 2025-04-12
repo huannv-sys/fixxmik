@@ -194,8 +194,8 @@ const TrafficAnalysisPage = () => {
     if (ipFilter) {
       filtered = filtered.filter((item) => {
         return (
-          (item.src_ip && item.src_ip.includes(ipFilter)) ||
-          (item.dst_ip && item.dst_ip.includes(ipFilter))
+          (item.src_ip?.includes(ipFilter)) ||
+          (item.dst_ip?.includes(ipFilter))
         );
       });
     }

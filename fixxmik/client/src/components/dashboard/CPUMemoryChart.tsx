@@ -70,7 +70,7 @@ const CPUMemoryChart: React.FC<CPUMemoryChartProps> = ({ deviceId }) => {
       // Xử lý dữ liệu khi nhận được
       const handleMetricsUpdate = (data: any) => {
         console.log("Nhận được metrics qua WebSocket:", data);
-        if (data && data.metrics) {
+        if (data?.metrics) {
           addRealTimeDataPoint(data.metrics);
         }
       };

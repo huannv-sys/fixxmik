@@ -1924,7 +1924,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
       
       // Lọc các kết quả bất thường
-      const anomalies = results.filter(r => r && r.isAnomaly);
+      const anomalies = results.filter(r => r?.isAnomaly);
       
       // Chuẩn bị kết quả phân tích chi tiết
       const anomalyDetails = anomalies.map((a, index) => {
@@ -2821,7 +2821,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const result = await trafficCollectorService.collectTrafficByDeviceRole(deviceId);
     
     // If collection was successful, broadcast to subscribed clients
-    if (result && result.success) {
+    if (result?.success) {
       const topic = `device_traffic_${deviceId}`;
       const data = {
         type: 'traffic_update',

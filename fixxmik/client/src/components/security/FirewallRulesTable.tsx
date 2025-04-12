@@ -45,7 +45,7 @@ const FirewallRulesTable: React.FC = () => {
           // Kiểm tra cấu trúc của dữ liệu trả về
           console.log("Received firewall rules data:", response.data);
           
-          if (response.data.data && response.data.data.filterRules) {
+          if (response.data.data?.filterRules) {
             // Sử dụng filterRules từ response
             setRules(response.data.data.filterRules || []);
             console.log("Filter rules parsed:", response.data.data.filterRules);

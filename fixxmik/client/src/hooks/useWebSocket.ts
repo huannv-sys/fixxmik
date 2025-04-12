@@ -44,7 +44,7 @@ export const useWebSocket = () => {
         setLastMessage(data);
         
         // Notify subscribers if event type is present
-        if (data && data.type && eventSubscribersRef.current.has(data.type)) {
+        if (data?.type && eventSubscribersRef.current.has(data.type)) {
           const handlers = eventSubscribersRef.current.get(data.type);
           if (handlers) {
             handlers.forEach(handler => {
