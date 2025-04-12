@@ -1029,28 +1029,28 @@ const TrafficAnalysisPage = () => {
                                     <div className="flex justify-between items-center">
                                       <span>HTTP (80)</span>
                                       <div className="h-2 w-3/4 bg-gray-200 rounded-full overflow-hidden">
-                                        <div className="h-full bg-blue-500 rounded-full" style={{ width: "65%" }}></div>
+                                        <div className="h-full bg-blue-500 rounded-full" style={{ width: "65%" }} />
                                       </div>
                                       <span>65%</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                       <span>HTTPS (443)</span>
                                       <div className="h-2 w-3/4 bg-gray-200 rounded-full overflow-hidden">
-                                        <div className="h-full bg-green-500 rounded-full" style={{ width: "20%" }}></div>
+                                        <div className="h-full bg-green-500 rounded-full" style={{ width: "20%" }} />
                                       </div>
                                       <span>20%</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                       <span>SSH (22)</span>
                                       <div className="h-2 w-3/4 bg-gray-200 rounded-full overflow-hidden">
-                                        <div className="h-full bg-yellow-500 rounded-full" style={{ width: "10%" }}></div>
+                                        <div className="h-full bg-yellow-500 rounded-full" style={{ width: "10%" }} />
                                       </div>
                                       <span>10%</span>
                                     </div>
                                     <div className="flex justify-between items-center">
                                       <span>DNS (53)</span>
                                       <div className="h-2 w-3/4 bg-gray-200 rounded-full overflow-hidden">
-                                        <div className="h-full bg-purple-500 rounded-full" style={{ width: "5%" }}></div>
+                                        <div className="h-full bg-purple-500 rounded-full" style={{ width: "5%" }} />
                                       </div>
                                       <span>5%</span>
                                     </div>

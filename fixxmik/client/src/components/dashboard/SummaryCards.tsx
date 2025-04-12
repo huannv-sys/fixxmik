@@ -39,16 +39,16 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ deviceId }) => {
           <h3 className="text-sm font-bold text-white">CPU Usage</h3>
           <div className="text-white bg-amber-600 p-1.5 rounded-md">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
-              <rect x="9" y="9" width="6" height="6"></rect>
-              <line x1="9" y1="1" x2="9" y2="4"></line>
-              <line x1="15" y1="1" x2="15" y2="4"></line>
-              <line x1="9" y1="20" x2="9" y2="23"></line>
-              <line x1="15" y1="20" x2="15" y2="23"></line>
-              <line x1="20" y1="9" x2="23" y2="9"></line>
-              <line x1="20" y1="14" x2="23" y2="14"></line>
-              <line x1="1" y1="9" x2="4" y2="9"></line>
-              <line x1="1" y1="14" x2="4" y2="14"></line>
+              <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
+              <rect x="9" y="9" width="6" height="6" />
+              <line x1="9" y1="1" x2="9" y2="4" />
+              <line x1="15" y1="1" x2="15" y2="4" />
+              <line x1="9" y1="20" x2="9" y2="23" />
+              <line x1="15" y1="20" x2="15" y2="23" />
+              <line x1="20" y1="9" x2="23" y2="9" />
+              <line x1="20" y1="14" x2="23" y2="14" />
+              <line x1="1" y1="9" x2="4" y2="9" />
+              <line x1="1" y1="14" x2="4" y2="14" />
             </svg>
           </div>
         </div>
@@ -61,7 +61,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ deviceId }) => {
           <div 
             className="bg-yellow-300 h-3 rounded-full" 
             style={{ width: `${latestMetric ? Math.round(latestMetric.cpuUsage || 0) : 0}%` }}
-          ></div>
+           />
         </div>
       </div>
       
@@ -71,10 +71,10 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ deviceId }) => {
           <h3 className="text-sm font-bold text-white">Memory Usage</h3>
           <div className="text-white bg-blue-600 p-1.5 rounded-md">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-              <line x1="6" y1="6" x2="6" y2="6"></line>
-              <line x1="6" y1="18" x2="6" y2="18"></line>
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+              <line x1="6" y1="6" x2="6" y2="6" />
+              <line x1="6" y1="18" x2="6" y2="18" />
             </svg>
           </div>
         </div>
@@ -90,7 +90,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ deviceId }) => {
               width: latestMetric && latestMetric.totalMemory ? 
                 `${Math.round((latestMetric.memoryUsage || 0) / latestMetric.totalMemory * 100)}%` : '0%' 
             }}
-          ></div>
+           />
         </div>
       </div>
       
@@ -100,7 +100,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ deviceId }) => {
           <h3 className="text-sm font-bold text-white">Bandwidth</h3>
           <div className="text-white bg-emerald-600 p-1.5 rounded-md">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
           </div>
         </div>
@@ -113,7 +113,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ deviceId }) => {
           <div 
             className="bg-emerald-300 h-3 rounded-full" 
             style={{ width: latestMetric ? '58%' : '0%' }}
-          ></div>
+           />
         </div>
       </div>
       
@@ -123,7 +123,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ deviceId }) => {
           <h3 className="text-sm font-bold text-white">Temperature</h3>
           <div className="text-white bg-red-600 p-1.5 rounded-md">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
             </svg>
           </div>
         </div>
@@ -138,7 +138,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ deviceId }) => {
             style={{ 
               width: latestMetric ? `${Math.min(100, Math.round((latestMetric.temperature || 0) / 80 * 100))}%` : '0%'
             }}
-          ></div>
+           />
         </div>
       </div>
     </div>

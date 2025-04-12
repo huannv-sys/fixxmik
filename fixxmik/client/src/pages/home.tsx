@@ -73,7 +73,7 @@ export default function Home() {
                         <h3 className="font-medium">{device.name}</h3>
                         <p className="text-sm text-muted-foreground">{device.address}</p>
                       </div>
-                      <div className={`rounded-full h-3 w-3 ${device.isConnected ? 'bg-green-500' : 'bg-destructive'}`}></div>
+                      <div className={`rounded-full h-3 w-3 ${device.isConnected ? 'bg-green-500' : 'bg-destructive'}`} />
                     </div>
                   </CardContent>
                 </Card>
