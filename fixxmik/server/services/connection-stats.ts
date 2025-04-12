@@ -332,7 +332,7 @@ class ConnectionStatsService {
       
       // Sử dụng dữ liệu port thật nếu có, nếu không có thì sử dụng dữ liệu mẫu
       if (!hasRealPortData || top10Ports.length === 0) {
-        logger.warn(`Không tìm thấy dữ liệu port thực tế, sử dụng dữ liệu mẫu cho hiển thị UI`);
+        logger.warn("Không tìm thấy dữ liệu port thực tế, sử dụng dữ liệu mẫu cho hiển thị UI");
         
         top10Ports = [
           { port: 80, protocol: 'tcp', connectionCount: 58, percentage: 58 / totalConnections * 100, serviceName: 'HTTP' },
