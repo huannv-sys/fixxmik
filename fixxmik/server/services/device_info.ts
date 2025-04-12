@@ -67,7 +67,7 @@ export class DeviceInfoService {
       
       const result = JSON.parse(stdout);
       
-      if (result.device && result.device.error) {
+      if (result.device?.error) {
         return { 
           model: sanitizedModelName, 
           url: '',
@@ -115,7 +115,7 @@ export class DeviceInfoService {
       const result = JSON.parse(stdout);
       
       if (version) {
-        if (result.routeros && result.routeros.error) {
+        if (result.routeros?.error) {
           return {
             version: version,
             release_date: '',

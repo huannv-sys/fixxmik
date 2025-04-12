@@ -176,7 +176,7 @@ class ConnectionStatsService {
           logger.info(`  reply-dst-address: ${conn['reply-dst-address']}`);
           
           // Kiểm tra có port không
-          if (conn['dst-address'] && conn['dst-address'].includes(':')) {
+          if (conn['dst-address']?.includes(':')) {
             const parts = conn['dst-address'].split(':');
             if (parts.length > 1) {
               logger.info(`  Extracted dst port from dst-address: ${parts[parts.length - 1]}`);
@@ -233,7 +233,7 @@ class ConnectionStatsService {
         // Xác định port và protocol
         // Tập trung vào port đích (dst-port) vì đó là các cổng dịch vụ
         let dstPort = null;
-        if (conn['dst-address'] && conn['dst-address'].includes(':')) {
+        if (conn['dst-address']?.includes(':')) {
           // Nếu có định dạng IP:PORT, thử trích xuất port từ địa chỉ đích
           const parts = conn['dst-address'].split(':');
           if (parts.length > 1) {

@@ -202,7 +202,7 @@ const ClientsPage: React.FC = () => {
         
         if (fallbackResponse.data && Array.isArray(fallbackResponse.data)) {
           setClients(fallbackResponse.data);
-        } else if (fallbackResponse.data && fallbackResponse.data.devices) {
+        } else if (fallbackResponse.data?.devices) {
           setClients(fallbackResponse.data.devices);
         } else {
           setClients([]);
@@ -238,7 +238,7 @@ const ClientsPage: React.FC = () => {
         routerId: deviceId // Thêm routerId để API biết thiết bị nào cần quét
       });
       
-      if (response.data && response.data.devices) {
+      if (response.data?.devices) {
         setClients(prevClients => {
           // Đảm bảo prev là mảng
           const currentClients = Array.isArray(prevClients) ? prevClients : [];
@@ -386,7 +386,7 @@ const ClientsPage: React.FC = () => {
     
     axios.get(`/api/clients/${client.id}`)
       .then(response => {
-        if (response.data && response.data.device) {
+        if (response.data?.device) {
           setDeviceDetails(response.data.device);
         } else {
           setDeviceDetails(response.data);

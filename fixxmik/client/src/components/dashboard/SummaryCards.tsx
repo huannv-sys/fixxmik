@@ -87,7 +87,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ deviceId }) => {
           <div 
             className="bg-blue-300 h-3 rounded-full" 
             style={{ 
-              width: latestMetric && latestMetric.totalMemory ? 
+              width: latestMetric?.totalMemory ? 
                 `${Math.round((latestMetric.memoryUsage || 0) / latestMetric.totalMemory * 100)}%` : '0%' 
             }}
           ></div>

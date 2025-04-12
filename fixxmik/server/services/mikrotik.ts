@@ -143,7 +143,7 @@ class MikrotikClient {
         this.connected = true;
         
         // Thiết lập sự kiện để theo dõi khi kết nối bị đóng một cách không mong muốn
-        if (this.connection && this.connection.socket) {
+        if (this.connection?.socket) {
           this.connection.socket.on('close', () => {
             console.log(`Connection to ${this.ipAddress} was closed unexpectedly`);
             this.connected = false;
