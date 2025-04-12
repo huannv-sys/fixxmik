@@ -140,7 +140,7 @@ export const Alert: React.FC<AlertProps> = ({
     <div className={classes} role="alert">
       {children}
       {dismissible && onClose && (
-        <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
+        <button type="button" className="btn-close" aria-label="Close" onClick={onClose} />
       )}
     </div>
   );

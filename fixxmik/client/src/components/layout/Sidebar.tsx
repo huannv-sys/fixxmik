@@ -42,10 +42,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
             </p>
             <Link href="/" className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${isActive('/') ? 'bg-blue-900 text-blue-500 border-l-4 border-blue-500' : 'text-slate-300 hover:bg-slate-700'}`}>
                 <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isActive('/') ? 'text-blue-400' : 'text-slate-400'} ${collapsed ? 'mx-auto' : 'mr-3'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="7" height="7"></rect>
-                  <rect x="14" y="3" width="7" height="7"></rect>
-                  <rect x="14" y="14" width="7" height="7"></rect>
-                  <rect x="3" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="3" width="7" height="7" />
+                  <rect x="14" y="3" width="7" height="7" />
+                  <rect x="14" y="14" width="7" height="7" />
+                  <rect x="3" y="14" width="7" height="7" />
                 </svg>
                 {!collapsed && "Overview"}
             </Link>
@@ -108,10 +108,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed }) => {
             </Link>
             <Link href="/clients" className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${isActive('/clients') ? 'bg-blue-900 text-blue-500 border-l-4 border-blue-500' : 'text-slate-300 hover:bg-slate-700'}`}>
                 <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isActive('/clients') ? 'text-blue-400' : 'text-slate-400'} ${collapsed ? 'mx-auto' : 'mr-3'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
                 {!collapsed && "Clients"}
             </Link>

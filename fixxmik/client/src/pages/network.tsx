@@ -103,7 +103,7 @@ const NetworkPage = () => {
         <TabsContent value="interfaces" className="space-y-4">
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
             </div>
           ) : interfaces && interfaces.length > 0 ? (
             <Card>
@@ -203,14 +203,14 @@ const NetworkPage = () => {
 
             <div className="bg-[#0c1e36] rounded-lg p-8 flex flex-col items-center justify-center min-h-[400px]">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-400 mb-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7"></rect>
-                <rect x="14" y="3" width="7" height="7"></rect>
-                <rect x="14" y="14" width="7" height="7"></rect>
-                <rect x="3" y="14" width="7" height="7"></rect>
-                <path d="M10 7h4"></path>
-                <path d="M7 10v4"></path>
-                <path d="M17 10v4"></path>
-                <path d="M10 17h4"></path>
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+                <path d="M10 7h4" />
+                <path d="M7 10v4" />
+                <path d="M17 10v4" />
+                <path d="M10 17h4" />
               </svg>
               <h3 className="text-2xl font-medium text-gray-100 mb-3">Network Topology Coming Soon</h3>
               <p className="text-base text-gray-400 text-center max-w-md">
