@@ -40,7 +40,7 @@ export interface DhcpLease {
   deviceId?: number; // ID của thiết bị Mikrotik nguồn
 }
 
-// Bản ghi interface từ MikroTik API 
+// Bản ghi interface từ MikroTik API
 export interface MikrotikInterface {
   id: string;
   name: string;
@@ -72,14 +72,14 @@ export interface MikrotikInterface {
 export interface NetworkDeviceDetails {
   ipAddress: string;
   macAddress: string;
-  hostname?: string;  // Khớp với tên trường trong schema.ts
+  hostname?: string; // Khớp với tên trường trong schema.ts
   interface?: string;
   vendor?: string;
   firstSeen?: Date;
   lastSeen?: Date;
   deviceType?: string;
   deviceData?: Record<string, any>;
-  isOnline?: boolean;  // Trạng thái online/offline của thiết bị
+  isOnline?: boolean; // Trạng thái online/offline của thiết bị
   metadata?: {
     openPorts?: number[];
     httpHeaders?: Record<string, string>;
@@ -96,7 +96,7 @@ export interface NetworkDeviceDetails {
     gateway?: string;
   };
   // Thêm các trường tương thích với networkDevices schema
-  hostName?: string;  // Trường cũ để tương thích ngược
+  hostName?: string; // Trường cũ để tương thích ngược
   deviceRole?: string;
   txBytes?: number;
   rxBytes?: number;

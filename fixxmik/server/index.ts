@@ -45,14 +45,14 @@ app.use((req, res, next) => {
     // Kiểm tra kết nối database
     await db.execute(sql`SELECT 1`);
     console.log("Database connection established");
-    
+
     // Khởi tạo scheduler service
     schedulerService.initialize();
     console.log("Scheduler service initialized");
   } catch (error) {
     console.error("Failed to initialize services:", error);
   }
-  
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -76,11 +76,14 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  server.listen(
+    {
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    },
+    () => {
+      log(`serving on port ${port}`);
+    },
+  );
 })();

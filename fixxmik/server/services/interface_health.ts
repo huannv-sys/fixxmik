@@ -1,4 +1,4 @@
-import { Interface } from '@shared/schema';
+import { Interface } from "@shared/schema";
 
 /**
  * Interface Health Score definition
@@ -11,7 +11,7 @@ import { Interface } from '@shared/schema';
  */
 export interface InterfaceHealth {
   score: number;
-  status: 'perfect' | 'good' | 'moderate' | 'concerning' | 'poor' | 'critical';
+  status: "perfect" | "good" | "moderate" | "concerning" | "poor" | "critical";
   details: string[];
 }
 
@@ -27,11 +27,11 @@ export class InterfaceHealthService {
     // Check if interface is up
     if (iface.isUp !== true) {
       score = 0;
-      details.push('Interface is down');
+      details.push("Interface is down");
       return {
         score,
-        status: 'critical',
-        details
+        status: "critical",
+        details,
       };
     }
 
@@ -70,25 +70,31 @@ export class InterfaceHealthService {
 
     // If there are no detected issues, add a positive note
     if (details.length === 0) {
-      details.push('No issues detected');
+      details.push("No issues detected");
     }
 
     // Ensure score doesn't go below 0
     score = Math.max(0, score);
 
     // Determine status based on score
-    let status: 'perfect' | 'good' | 'moderate' | 'concerning' | 'poor' | 'critical';
-    if (score === 100) status = 'perfect';
-    else if (score >= 90) status = 'good';
-    else if (score >= 70) status = 'moderate';
-    else if (score >= 50) status = 'concerning';
-    else if (score >= 20) status = 'poor';
-    else status = 'critical';
+    let status:
+      | "perfect"
+      | "good"
+      | "moderate"
+      | "concerning"
+      | "poor"
+      | "critical";
+    if (score === 100) status = "perfect";
+    else if (score >= 90) status = "good";
+    else if (score >= 70) status = "moderate";
+    else if (score >= 50) status = "concerning";
+    else if (score >= 20) status = "poor";
+    else status = "critical";
 
     return {
       score,
       status,
-      details
+      details,
     };
   }
 
@@ -96,22 +102,22 @@ export class InterfaceHealthService {
    * Get the color class based on health score
    */
   getHealthScoreColorClass(score: number): string {
-    if (score >= 90) return 'text-green-500';
-    if (score >= 70) return 'text-blue-500';
-    if (score >= 50) return 'text-yellow-500';
-    if (score >= 20) return 'text-orange-500';
-    return 'text-red-500';
+    if (score >= 90) return "text-green-500";
+    if (score >= 70) return "text-blue-500";
+    if (score >= 50) return "text-yellow-500";
+    if (score >= 20) return "text-orange-500";
+    return "text-red-500";
   }
 
   /**
    * Get the background color class based on health score
    */
   getHealthScoreBackgroundClass(score: number): string {
-    if (score >= 90) return 'bg-green-500';
-    if (score >= 70) return 'bg-blue-500';
-    if (score >= 50) return 'bg-yellow-500';
-    if (score >= 20) return 'bg-orange-500';
-    return 'bg-red-500';
+    if (score >= 90) return "bg-green-500";
+    if (score >= 70) return "bg-blue-500";
+    if (score >= 50) return "bg-yellow-500";
+    if (score >= 20) return "bg-orange-500";
+    return "bg-red-500";
   }
 }
 

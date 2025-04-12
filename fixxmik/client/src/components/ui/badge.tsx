@@ -35,7 +35,7 @@ export function Badge({
         "badge d-inline-flex align-items-center",
         variantClass,
         sizeClass,
-        className
+        className,
       )}
       {...props}
     />

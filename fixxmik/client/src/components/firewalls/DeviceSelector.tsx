@@ -1,14 +1,14 @@
-import { useDevices, useSyncFirewallRules } from '@/hooks/use-mikrotik';
-import { RefreshCw, Plus } from 'lucide-react';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useDevices, useSyncFirewallRules } from "@/hooks/use-mikrotik";
+import { RefreshCw, Plus } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface DeviceSelectorProps {
   selectedDeviceId: number | null;
@@ -17,21 +17,16 @@ interface DeviceSelectorProps {
   onSelectChain: (chain: string) => void;
 }
 
-export default function DeviceSelector({ 
-  selectedDeviceId, 
+export default function DeviceSelector({
+  selectedDeviceId,
   onSelectDevice,
   selectedChain,
-  onSelectChain
+  onSelectChain,
 }: DeviceSelectorProps) {
   const { data: devices, isLoading } = useDevices();
   const syncMutation = useSyncFirewallRules(selectedDeviceId || 0);
-  
-  const chains = [
-    'All Chains',
-    'forward',
-    'input',
-    'output'
-  ];
+
+  const chains = ["All Chains", "forward", "input", "output"];
 
   const handleSyncRules = () => {
     if (selectedDeviceId) {
@@ -44,7 +39,10 @@ export default function DeviceSelector({
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div>
-            <label htmlFor="device" className="block text-xs text-muted-foreground mb-1">
+            <label
+              htmlFor="device"
+              className="block text-xs text-muted-foreground mb-1"
+            >
               Selected Device:
             </label>
             <Select
@@ -66,7 +64,10 @@ export default function DeviceSelector({
             </Select>
           </div>
           <div>
-            <label htmlFor="chain" className="block text-xs text-muted-foreground mb-1">
+            <label
+              htmlFor="chain"
+              className="block text-xs text-muted-foreground mb-1"
+            >
               Firewall Chain:
             </label>
             <Select
@@ -88,19 +89,18 @@ export default function DeviceSelector({
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleSyncRules}
             disabled={!selectedDeviceId || syncMutation.isPending}
           >
-            <RefreshCw className={`h-4 w-4 mr-1 ${syncMutation.isPending ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-1 ${syncMutation.isPending ? "animate-spin" : ""}`}
+            />
             <span>Refresh Rules</span>
           </Button>
-          <Button 
-            size="sm"
-            disabled={!selectedDeviceId}
-          >
+          <Button size="sm" disabled={!selectedDeviceId}>
             <Plus className="h-4 w-4 mr-1" />
             <span>Add Rule</span>
           </Button>

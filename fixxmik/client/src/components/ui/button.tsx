@@ -36,7 +36,7 @@ export const buttonVariants = ({
 } = {}) => {
   // Map variants to Bootstrap classes
   let variantClass = "";
-  
+
   if (variant === "ghost") {
     variantClass = "btn-link text-body";
   } else {
@@ -54,14 +54,24 @@ export const buttonVariants = ({
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "md", children, disabled, ...props }, ref) => {
+  (
+    {
+      className,
+      variant = "primary",
+      size = "md",
+      children,
+      disabled,
+      ...props
+    },
+    ref,
+  ) => {
     return (
       <button
         ref={ref}
         className={cn(
           buttonVariants({ variant, size }),
           disabled && "disabled",
-          className
+          className,
         )}
         disabled={disabled}
         {...props}
@@ -69,7 +79,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 
 Button.displayName = "Button";

@@ -1,17 +1,25 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
-import { storage } from '../storage';
-import { InsertUser, InsertSession, User, Login, UserLog, Role } from '@shared/schema';
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import { storage } from "../storage";
+import {
+  InsertUser,
+  InsertSession,
+  User,
+  Login,
+  UserLog,
+  Role,
+} from "@shared/schema";
 
 // Số lượng vòng băm cho bcrypt
 const SALT_ROUNDS = 10;
 
 // Thời gian token hết hạn (7 ngày)
-const TOKEN_EXPIRES_IN = '7d';
+const TOKEN_EXPIRES_IN = "7d";
 
 // JWT secret key - nên đặt vào biến môi trường
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-need-to-be-changed';
+const JWT_SECRET =
+  process.env.JWT_SECRET || "your-secret-key-need-to-be-changed";
 
 class AuthService {
   /**
@@ -24,7 +32,10 @@ class AuthService {
   /**
    * So sánh mật khẩu đã nhập với mật khẩu đã băm
    */
-  async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
+  async comparePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
   }
 
@@ -56,7 +67,7 @@ class AuthService {
    * Tạo session token
    */
   generateSessionToken(): string {
-    return crypto.randomBytes(32).toString('hex');
+    return crypto.randomBytes(32).toString("hex");
   }
 
   /**
@@ -81,7 +92,7 @@ class AuthService {
 
       return newUser;
     } catch (error) {
-      console.error('Lỗi khi đăng ký người dùng:', error);
+      console.error("Lỗi khi đăng ký người dùng:", error);
       return null;
     }
   }
@@ -89,7 +100,11 @@ class AuthService {
   /**
    * Đăng nhập
    */
-  async login(loginData: Login, ipAddress?: string, userAgent?: string): Promise<{ user: User, token: string } | null> {
+  async login(
+    loginData: Login,
+    ipAddress?: string,
+    userAgent?: string,
+  ): Promise<{ user: User; token: string } | null> {
     try {
       // Lấy thông tin người dùng
       const user = await storage.getUserByUsername(loginData.username);
@@ -98,7 +113,10 @@ class AuthService {
       }
 
       // Kiểm tra mật khẩu
-      const isPasswordValid = await this.comparePassword(loginData.password, user.password);
+      const isPasswordValid = await this.comparePassword(
+        loginData.password,
+        user.password,
+      );
       if (!isPasswordValid) {
         return null; // Mật khẩu không đúng
       }
@@ -126,11 +144,18 @@ class AuthService {
       await storage.updateUser(user.id, { lastLogin: new Date() });
 
       // Ghi log đăng nhập
-      await this.logUserActivity(user.id, 'LOGIN', 'user', user.id, 'Đăng nhập thành công', ipAddress);
+      await this.logUserActivity(
+        user.id,
+        "LOGIN",
+        "user",
+        user.id,
+        "Đăng nhập thành công",
+        ipAddress,
+      );
 
       return { user, token };
     } catch (error) {
-      console.error('Lỗi khi đăng nhập:', error);
+      console.error("Lỗi khi đăng nhập:", error);
       return null;
     }
   }
@@ -138,19 +163,30 @@ class AuthService {
   /**
    * Đăng xuất
    */
-  async logout(userId: number, token: string, ipAddress?: string): Promise<boolean> {
+  async logout(
+    userId: number,
+    token: string,
+    ipAddress?: string,
+  ): Promise<boolean> {
     try {
       // Xóa phiên đăng nhập
       const success = await storage.deleteSession(token);
-      
+
       // Ghi log đăng xuất
       if (success) {
-        await this.logUserActivity(userId, 'LOGOUT', 'user', userId, 'Đăng xuất thành công', ipAddress);
+        await this.logUserActivity(
+          userId,
+          "LOGOUT",
+          "user",
+          userId,
+          "Đăng xuất thành công",
+          ipAddress,
+        );
       }
 
       return success;
     } catch (error) {
-      console.error('Lỗi khi đăng xuất:', error);
+      console.error("Lỗi khi đăng xuất:", error);
       return false;
     }
   }
@@ -186,7 +222,7 @@ class AuthService {
 
       return user;
     } catch (error) {
-      console.error('Lỗi khi xác thực người dùng:', error);
+      console.error("Lỗi khi xác thực người dùng:", error);
       return null;
     }
   }
@@ -195,10 +231,10 @@ class AuthService {
    * Kiểm tra quyền truy cập
    */
   hasPermission(userRole: Role, requiredRole: Role): boolean {
-    const roles: Role[] = ['viewer', 'operator', 'admin'];
+    const roles: Role[] = ["viewer", "operator", "admin"];
     const userRoleIndex = roles.indexOf(userRole);
     const requiredRoleIndex = roles.indexOf(requiredRole);
-    
+
     // Người dùng có quyền cao hơn hoặc bằng quyền yêu cầu
     return userRoleIndex >= requiredRoleIndex;
   }
@@ -212,7 +248,7 @@ class AuthService {
     target?: string,
     targetId?: number,
     details?: string,
-    ipAddress?: string
+    ipAddress?: string,
   ): Promise<UserLog | null> {
     try {
       const logData: any = {
@@ -221,12 +257,12 @@ class AuthService {
         target,
         targetId,
         details,
-        ipAddress
+        ipAddress,
       };
 
       return await storage.createUserLog(logData);
     } catch (error) {
-      console.error('Lỗi khi ghi log hoạt động:', error);
+      console.error("Lỗi khi ghi log hoạt động:", error);
       return null;
     }
   }
